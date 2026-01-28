@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hi Pookie</title>
+  <meta name="description" content="A tiny website for you." />
+  <style>
+    :root{
+      --bg: #0b1020;
+      --card: rgba(255,255,255,.07);
+      --card2: rgba(0,0,0,.20);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.72);
+      --line: rgba(255,255,255,.14);
+      --accent: #ff4da6;
+      --accent2: #7c3aed;
+      --shadow: 0 12px 30px rgba(0,0,0,.38);
+      --radius: 18px;
+      --max: 980px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color: var(--text);
+      background:
+        radial-gradient(1100px 700px at 10% 10%, rgba(255,77,166,.22), transparent 55%),
+        radial-gradient(900px 650px at 90% 20%, rgba(124,58,237,.22), transparent 58%),
+        radial-gradient(900px 700px at 50% 90%, rgba(59,130,246,.15), transparent 60%),
+        var(--bg);
+      line-height: 1.5;
+    }
+    .wrap{max-width:var(--max); margin:0 auto; padding:26px 18px 70px}
+    header{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding:14px 16px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background: rgba(0,0,0,.20);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      position: sticky; top: 14px; z-index: 10;
+    }
+    .brand{display:flex; align-items:center; gap:10px; font-weight:750; letter-spacing:.2px}
+    .heart{
+      width:14px; height:14px; border-radius:6px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 0 4px rgba(255,77,166,.12);
+      transform: rotate(10deg);
+    }
+    .tiny{color:var(--muted); font-size:13px}
+    main{padding:18px 6px}
+    .hero{
+      padding:26px 2px 8px;
+      display:flex; flex-direction:column; gap:8px;
+    }
+    h1{margin:0; font-size:44px; line-height:1.05}
+    @media (max-width: 520px){ h1{font-size:36px} }
+    .sub{margin:0; color:var(--muted); max-width: 62ch}
+    .grid{
+      margin-top:18px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:14px;
+    }
+    @media (max-width: 740px){ .grid{grid-template-columns:1fr} }
+    .card{
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--card);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .tile{
+      cursor:pointer;
+      padding:18px 18px 16px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      min-height:140px;
+      background:
+        radial-gradient(600px 220px at 15% 0%, rgba(255,77,166,.18), transparent 60%),
+        radial-gradient(500px 260px at 100% 40%, rgba(124,58,237,.18), transparent 58%),
+        var(--card);
+      transition: transform .12s ease, border-color .12s ease, background .12s ease;
+    }
+    .tile:hover{
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,.22);
+    }
+    .tileTop{display:flex; align-items:flex-start; justify-content:space-between; gap:12px}
+    .badge{
+      font-size:12px;
+      padding:6px 10px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background: rgba(0,0,0,.20);
+      color: var(--muted);
+      white-space:nowrap;
+    }
+    .title{margin:0; font-size:18px}
+    .desc{margin:0; color:var(--muted); font-size:14px}
+    .arrow{color:var(--muted); font-size:18px; user-select:none}
+    .view{
+      display:none;
+      margin-top:14px;
+      padding:18px;
+    }
+    .view.active{display:block}
+    .row{
+      display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+    h2{margin:0; font-size:22px}
+    .btn{
+      appearance:none;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      padding:10px 12px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-weight:650;
+      font-size:14px;
+    }
+    .btn:hover{transform: translateY(-1px)}
+    .panel{
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--card2);
+      padding:14px;
+    }
+    .muted{color:var(--muted)}
+    .timeline{
+      display:flex; flex-direction:column; gap:10px;
+    }
+    .event{
+      display:grid; grid-template-columns: 120px 1fr; gap:12px;
+      padding:12px;
+      border:1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,.05);
+    }
+    @media (max-width: 520px){ .event{grid-template-columns:1fr} }
+    .date{
+      font-weight:750;
+      color: rgba(255,255,255,.86);
+    }
+    .gameBox{
+      display:grid; gap:12px;
+    }
+    .gameStats{
+      display:flex; gap:10px; flex-wrap:wrap;
+    }
+    .pill{
+      font-size:12px; padding:6px 10px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background: rgba(255,255,255,.05);
+      color: var(--muted);
+    }
+    input[type="text"]{
+      width:100%;
+      padding:12px 12px;
+      border-radius: 12px;
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.20);
+      color: var(--text);
+      font: inherit;
+      outline:none;
+    }
+    .two{
+      display:grid; grid-template-columns: 1fr auto; gap:10px;
+      align-items:center;
+    }
+    @media (max-width: 520px){ .two{grid-template-columns:1fr} }
+    footer{
+      margin-top:22px;
+      padding:16px 4px 0;
+      border-top:1px solid var(--line);
+      color: var(--muted);
+      display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
+    }
+    .hidden{display:none}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <span class="heart"></span>
+        <span>Hi Pookie</span>
+      </div>
+      <div class="tiny" id="today"></div>
+    </header>
+
+    <main>
+      <section id="home" class="hero">
+        <h1>Hi Pookie</h1>
+        <p class="sub">
+          I made this little page for you. Pick a box and it will open.
+        </p>
+
+        <div class="grid">
+          <div class="card tile" role="button" tabindex="0" data-open="timelineView" aria-label="Open timeline">
+            <div class="tileTop">
+              <div>
+                <p class="title">Timeline</p>
+                <p class="desc">Tiny moments we can add to over time.</p>
+              </div>
+              <span class="badge">Click</span>
+            </div>
+            <div class="arrow">›</div>
+          </div>
+
+          <div class="card tile" role="button" tabindex="0" data-open="gameView" aria-label="Open game">
+            <div class="tileTop">
+              <div>
+                <p class="title">Game</p>
+                <p class="desc">A quick little guessing game.</p>
+              </div>
+              <span class="badge">Click</span>
+            </div>
+            <div class="arrow">›</div>
+          </div>
+
+          <div class="card tile" role="button" tabindex="0" data-open="infoView" aria-label="Open info">
+            <div class="tileTop">
+              <div>
+                <p class="title">Info</p>
+                <p class="desc">Cute facts and a message.</p>
+              </div>
+              <span class="badge">Click</span>
+            </div>
+            <div class="arrow">›</div>
+          </div>
+
+          <div class="card tile" role="button" tabindex="0" data-open="futureView" aria-label="Open future">
+            <div class="tileTop">
+              <div>
+                <p class="title">Future</p>
+                <p class="desc">Plans, wishes, and next dates.</p>
+              </div>
+              <span class="badge">Click</span>
+            </div>
+            <div class="arrow">›</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="timelineView" class="card view" aria-label="Timeline view">
+        <div class="row">
+          <h2>Timeline</h2>
+          <button class="btn" data-back>Back</button>
+        </div>
+
+        <div class="panel timeline" id="timelineList">
+          <div class="event">
+            <div class="date">2026-01-01</div>
+            <div>
+              <div><b>Our little start</b></div>
+              <div class="muted">Replace this with the real date and a short memory.</div>
+            </div>
+          </div>
+          <div class="event">
+            <div class="date">2026-01-14</div>
+            <div>
+              <div><b>First cozy day</b></div>
+              <div class="muted">Add your own moments here.</div>
+            </div>
+          </div>
+          <div class="event">
+            <div class="date">2026-02-02</div>
+            <div>
+              <div><b>A tiny tradition</b></div>
+              <div class="muted">Example: favorite cafe, walk, movie night, anything.</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="panel">
+          <p class="muted" style="margin-top:0">
+            Quick add (saves only in this browser, not uploaded). Good for drafting.
+          </p>
+          <div class="two">
+            <input id="tlInput" type="text" placeholder="Example: 2026-03-01 | We got ice cream and laughed a lot" />
+            <button class="btn" id="tlAdd">Add</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="gameView" class="card view" aria-label="Game view">
+        <div class="row">
+          <h2>Game</h2>
+          <button class="btn" data-back>Back</button>
+        </div>
+
+        <div class="panel gameBox">
+          <div class="muted">
+            Guess the secret word. I set it to <b>pookie</b> for now, but you can change it in the code.
+          </div>
+
+          <div class="two">
+            <input id="guessInput" type="text" placeholder="Type your guess..." />
+            <button class="btn" id="guessBtn">Guess</button>
+          </div>
+
+          <div class="gameStats">
+            <span class="pill">Attempts: <b id="attempts">0</b></span>
+            <span class="pill">Best hint: <b id="hint">-</b></span>
+          </div>
+
+          <div id="gameMsg" class="panel" style="background: rgba(255,255,255,.05)">
+            Type a guess and press Guess.
+          </div>
+
+          <button class="btn" id="resetBtn" type="button">Reset game</button>
+        </div>
+      </section>
+
+      <section id="infoView" class="card view" aria-label="Info view">
+        <div class="row">
+          <h2>Info</h2>
+          <button class="btn" data-back>Back</button>
+        </div>
+
+        <div class="panel">
+          <p style="margin-top:0">
+            <b>Message</b>
+          </p>
+          <p class="muted" style="margin-top:0">
+            Write your message here. Example: I appreciate you, I am proud of you, and I am really happy we have each other.
+          </p>
+
+          <div style="height:10px"></div>
+
+          <p style="margin:0"><b>Cute facts</b></p>
+          <ul class="muted" style="margin:8px 0 0; padding-left:18px">
+            <li>Your laugh is my favorite sound.</li>
+            <li>I love how safe it feels to be with you.</li>
+            <li>I am collecting moments with you like souvenirs.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="futureView" class="card view" aria-label="Future view">
+        <div class="row">
+          <h2>Future</h2>
+          <button class="btn" data-back>Back</button>
+        </div>
+
+        <div class="panel">
+          <p style="margin-top:0" class="muted">
+            Add plans and a countdown to the next date.
+          </p>
+
+          <div class="panel" style="background: rgba(255,255,255,.05)">
+            <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center">
+              <span class="pill">Next date: <b id="nextDateLabel">2026-02-14</b></span>
+              <span class="pill">Days left: <b id="daysLeft">0</b></span>
+            </div>
+          </div>
+
+          <div style="height:10px"></div>
+
+          <ul class="muted" style="margin:0; padding-left:18px">
+            <li>Plan: picnic + photos</li>
+            <li>Plan: cook dinner together</li>
+            <li>Plan: weekend trip</li>
+          </ul>
+
+          <div style="height:12px"></div>
+
+          <div class="panel">
+            <p style="margin:0 0 8px"><b>Change next date</b></p>
+            <div class="two">
+              <input id="nextDateInput" type="text" placeholder="YYYY-MM-DD" />
+              <button class="btn" id="setNextDate">Set</button>
+            </div>
+            <p class="muted" style="margin:8px 0 0; font-size:13px">
+              This saves only in this browser.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <span class="pill">Made with love</span>
+        <span class="pill" id="footYear">©</span>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    function fmtToday(){
+      const now = new Date();
+      return now.toLocaleDateString(undefined, { weekday:"short", year:"numeric", month:"short", day:"numeric" });
+    }
+
+    function showHome(){
+      $("home").classList.remove("hidden");
+      document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function openView(viewId){
+      $("home").classList.add("hidden");
+      document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+      $(viewId).classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function wireTiles(){
+      document.querySelectorAll("[data-open]").forEach(tile => {
+        const openId = tile.getAttribute("data-open");
+        const go = () => openView(openId);
+
+        tile.addEventListener("click", go);
+        tile.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") go();
+        });
+      });
+
+      document.querySelectorAll("[data-back]").forEach(btn => {
+        btn.addEventListener("click", showHome);
+      });
+    }
+
+    // Timeline local save
+    const TL_KEY = "pookie_timeline_items_v1";
+    function loadTimeline(){
+      try{
+        const raw = localStorage.getItem(TL_KEY);
+        if(!raw) return [];
+        const arr = JSON.parse(raw);
+        return Array.isArray(arr) ? arr : [];
+      }catch{ return []; }
+    }
+    function saveTimeline(items){
+      localStorage.setItem(TL_KEY, JSON.stringify(items));
+    }
+    function renderTimeline(){
+      const items = loadTimeline();
+      const container = $("timelineList");
+      if(items.length === 0) return;
+
+      items.forEach(it => {
+        const div = document.createElement("div");
+        div.className = "event";
+        div.innerHTML =
+          '<div class="date"></div>' +
+          '<div><div><b></b></div><div class="muted"></div></div>';
+        div.querySelector(".date").textContent = it.date;
+        div.querySelector("b").textContent = it.title;
+        div.querySelector(".muted").textContent = it.note;
+        container.appendChild(div);
+      });
+    }
+    function addTimelineFromInput(){
+      const raw = $("tlInput").value.trim();
+      if(!raw) return;
+
+      // Format: YYYY-MM-DD | Title | Note
+      const parts = raw.split("|").map(s => s.trim()).filter(Boolean);
+      const date = parts[0] || "YYYY-MM-DD";
+      const title = parts[1] || "Memory";
+      const note = parts[2] || "Add details here.";
+
+      const items = loadTimeline();
+      items.unshift({ date, title, note });
+      saveTimeline(items);
+      $("tlInput").value = "";
+      location.reload();
+    }
+
+    // Game: guess the word
+    const SECRET = "pookie"; // change this if you want
+    let attempts = 0;
+
+    function commonPrefixLen(a,b){
+      const n = Math.min(a.length, b.length);
+      let i = 0;
+      while(i < n && a[i] === b[i]) i++;
+      return i;
+    }
+
+    function guess(){
+      const g = $("guessInput").value.trim().toLowerCase();
+      if(!g){
+        $("gameMsg").textContent = "Type something first.";
+        return;
+      }
+      attempts += 1;
+      $("attempts").textContent = String(attempts);
+
+      if(g === SECRET){
+        $("gameMsg").textContent = "Correct! You win. 💖";
+        $("hint").textContent = "Perfect";
+        return;
+      }
+
+      const pref = commonPrefixLen(g, SECRET);
+      const hint = pref === 0 ? "No match" : ("Matches first " + pref + " letter(s)");
+      $("hint").textContent = hint;
+
+      if(g.length < SECRET.length){
+        $("gameMsg").textContent = "Not quite. Hint: your word is shorter than the secret.";
+      }else if(g.length > SECRET.length){
+        $("gameMsg").textContent = "Not quite. Hint: your word is longer than the secret.";
+      }else{
+        $("gameMsg").textContent = "So close. Hint: same length, different letters.";
+      }
+    }
+
+    function resetGame(){
+      attempts = 0;
+      $("attempts").textContent = "0";
+      $("hint").textContent = "-";
+      $("guessInput").value = "";
+      $("gameMsg").textContent = "Type a guess and press Guess.";
+    }
+
+    // Future countdown local save
+    const NEXT_KEY = "pookie_next_date_v1";
+    function getNextDate(){
+      const raw = localStorage.getItem(NEXT_KEY) || "2026-02-14";
+      return raw;
+    }
+    function setNextDate(raw){
+      localStorage.setItem(NEXT_KEY, raw);
+    }
+    function daysBetween(a,b){
+      const ms = 24*60*60*1000;
+      const start = new Date(a.getFullYear(), a.getMonth(), a.getDate());
+      const end = new Date(b.getFullYear(), b.getMonth(), b.getDate());
+      return Math.round((end - start) / ms);
+    }
+    function updateFuture(){
+      const raw = getNextDate();
+      $("nextDateLabel").textContent = raw;
+
+      const now = new Date();
+      const target = new Date(raw + "T00:00:00");
+      const left = daysBetween(now, target);
+      $("daysLeft").textContent = String(Math.max(0, left));
+    }
+
+    function init(){
+      $("today").textContent = fmtToday();
+      $("footYear").textContent = "© " + new Date().getFullYear();
+
+      wireTiles();
+
+      renderTimeline();
+      $("tlAdd").addEventListener("click", addTimelineFromInput);
+      $("tlInput").addEventListener("keydown", (e) => {
+        if(e.key === "Enter") addTimelineFromInput();
+      });
+
+      $("guessBtn").addEventListener("click", guess);
+      $("guessInput").addEventListener("keydown", (e) => {
+        if(e.key === "Enter") guess();
+      });
+      $("resetBtn").addEventListener("click", resetGame);
+
+      updateFuture();
+      $("setNextDate").addEventListener("click", () => {
+        const raw = $("nextDateInput").value.trim();
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(raw)){
+          alert("Please use YYYY-MM-DD");
+          return;
+        }
+        setNextDate(raw);
+        $("nextDateInput").value = "";
+        updateFuture();
+      });
+      setInterval(updateFuture, 60 * 1000);
+    }
+    init();
+  </script>
+</body>
+</html>
