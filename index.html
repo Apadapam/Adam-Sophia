@@ -4,53 +4,71 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Hi Pookie</title>
-  <meta name="description" content="A tiny website for you." />
+  <meta name="description" content="A cute website for you." />
+
   <style>
     :root{
-      --bg: #0b1020;
-      --card: rgba(255,255,255,.07);
-      --card2: rgba(0,0,0,.20);
-      --text: rgba(255,255,255,.92);
-      --muted: rgba(255,255,255,.72);
-      --line: rgba(255,255,255,.14);
+      --bg1: #fff1f6;
+      --bg2: #ffe4f2;
+      --card: rgba(255,255,255,.78);
+      --card2: rgba(255,255,255,.62);
+      --text: rgba(25, 10, 20, .92);
+      --muted: rgba(25, 10, 20, .62);
+      --line: rgba(25,10,20,.12);
       --accent: #ff4da6;
       --accent2: #7c3aed;
-      --shadow: 0 12px 30px rgba(0,0,0,.38);
+      --shadow: 0 14px 34px rgba(20, 0, 10, .18);
       --radius: 18px;
       --max: 980px;
     }
+
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
       color: var(--text);
-      background:
-        radial-gradient(1100px 700px at 10% 10%, rgba(255,77,166,.22), transparent 55%),
-        radial-gradient(900px 650px at 90% 20%, rgba(124,58,237,.22), transparent 58%),
-        radial-gradient(900px 700px at 50% 90%, rgba(59,130,246,.15), transparent 60%),
-        var(--bg);
+      background: radial-gradient(1200px 700px at 20% 10%, var(--bg2), transparent 60%),
+                  radial-gradient(1100px 700px at 80% 15%, #e8d7ff, transparent 62%),
+                  radial-gradient(1000px 700px at 50% 90%, #d9f6ff, transparent 60%),
+                  var(--bg1);
       line-height: 1.5;
+      overflow-x:hidden;
     }
-    .wrap{max-width:var(--max); margin:0 auto; padding:26px 18px 70px}
+
+    /* Heart pattern overlay */
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.28;
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cpath d='M80 125c-23-18-46-34-46-58 0-14 10-25 24-25 9 0 17 5 22 12 5-7 13-12 22-12 14 0 24 11 24 25 0 24-23 40-46 58z' fill='%23ff4da6' fill-opacity='0.9'/%3E%3Cpath d='M30 52c-9-7-18-13-18-22 0-5 4-10 10-10 4 0 7 2 8 5 2-3 5-5 9-5 6 0 10 5 10 10 0 9-9 15-19 22z' fill='%237c3aed' fill-opacity='0.6'/%3E%3Cpath d='M130 45c-7-5-14-10-14-17 0-4 3-8 8-8 3 0 5 2 6 4 1-2 4-4 7-4 5 0 8 4 8 8 0 7-7 12-15 17z' fill='%23ff4da6' fill-opacity='0.45'/%3E%3C/svg%3E");
+      background-size: 160px 160px;
+      filter: blur(.2px);
+    }
+
+    .wrap{max-width:var(--max); margin:0 auto; padding:26px 18px 70px; position:relative}
     header{
       display:flex; align-items:center; justify-content:space-between; gap:12px;
       padding:14px 16px;
       border:1px solid var(--line);
       border-radius:999px;
-      background: rgba(0,0,0,.20);
+      background: rgba(255,255,255,.72);
       backdrop-filter: blur(10px);
       box-shadow: var(--shadow);
       position: sticky; top: 14px; z-index: 10;
     }
-    .brand{display:flex; align-items:center; gap:10px; font-weight:750; letter-spacing:.2px}
-    .heart{
+    .brand{display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:.2px}
+    .heartBadge{
       width:14px; height:14px; border-radius:6px;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
-      box-shadow: 0 0 0 4px rgba(255,77,166,.12);
+      box-shadow: 0 0 0 4px rgba(255,77,166,.14);
       transform: rotate(10deg);
     }
     .tiny{color:var(--muted); font-size:13px}
+
     main{padding:18px 6px}
     .hero{
       padding:26px 2px 8px;
@@ -59,6 +77,7 @@
     h1{margin:0; font-size:44px; line-height:1.05}
     @media (max-width: 520px){ h1{font-size:36px} }
     .sub{margin:0; color:var(--muted); max-width: 62ch}
+
     .grid{
       margin-top:18px;
       display:grid;
@@ -66,6 +85,7 @@
       gap:14px;
     }
     @media (max-width: 740px){ .grid{grid-template-columns:1fr} }
+
     .card{
       border:1px solid var(--line);
       border-radius: var(--radius);
@@ -73,42 +93,72 @@
       box-shadow: var(--shadow);
       overflow:hidden;
     }
+
     .tile{
       cursor:pointer;
       padding:18px 18px 16px;
       display:flex;
       flex-direction:column;
       gap:10px;
-      min-height:140px;
+      min-height:150px;
       background:
         radial-gradient(600px 220px at 15% 0%, rgba(255,77,166,.18), transparent 60%),
-        radial-gradient(500px 260px at 100% 40%, rgba(124,58,237,.18), transparent 58%),
+        radial-gradient(500px 260px at 100% 40%, rgba(124,58,237,.16), transparent 58%),
         var(--card);
-      transition: transform .12s ease, border-color .12s ease, background .12s ease;
+      transition: transform .12s ease, border-color .12s ease;
     }
     .tile:hover{
       transform: translateY(-2px);
-      border-color: rgba(255,255,255,.22);
+      border-color: rgba(25,10,20,.22);
     }
+
     .tileTop{display:flex; align-items:flex-start; justify-content:space-between; gap:12px}
+    .tileLeft{display:flex; gap:12px; align-items:flex-start}
+
+    .icon{
+      width:44px; height:44px;
+      border-radius: 14px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.65);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      flex: 0 0 auto;
+      box-shadow: 0 10px 20px rgba(20,0,10,.10);
+    }
+    .icon img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .iconFallback{
+      font-size:20px;
+      color: rgba(25,10,20,.75);
+      user-select:none;
+    }
+
     .badge{
       font-size:12px;
       padding:6px 10px;
       border:1px solid var(--line);
       border-radius:999px;
-      background: rgba(0,0,0,.20);
+      background: rgba(255,255,255,.6);
       color: var(--muted);
       white-space:nowrap;
     }
-    .title{margin:0; font-size:18px}
+    .title{margin:0; font-size:18px; font-weight:850}
     .desc{margin:0; color:var(--muted); font-size:14px}
     .arrow{color:var(--muted); font-size:18px; user-select:none}
+
     .view{
       display:none;
       margin-top:14px;
       padding:18px;
     }
     .view.active{display:block}
+
     .row{
       display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
       margin-bottom:10px;
@@ -117,15 +167,22 @@
     .btn{
       appearance:none;
       border:1px solid var(--line);
-      background: rgba(255,255,255,.06);
+      background: rgba(255,255,255,.7);
       color: var(--text);
       padding:10px 12px;
       border-radius: 12px;
       cursor:pointer;
-      font-weight:650;
+      font-weight:800;
       font-size:14px;
+      box-shadow: 0 10px 20px rgba(20,0,10,.10);
     }
     .btn:hover{transform: translateY(-1px)}
+    .btnPrimary{
+      border-color: rgba(255,77,166,.40);
+      background: linear-gradient(135deg, rgba(255,77,166,.85), rgba(124,58,237,.55));
+      color: rgba(25,10,20,.95);
+    }
+
     .panel{
       border:1px solid var(--line);
       border-radius: var(--radius);
@@ -133,40 +190,129 @@
       padding:14px;
     }
     .muted{color:var(--muted)}
+
+    /* Our Story timeline */
     .timeline{
-      display:flex; flex-direction:column; gap:10px;
+      position:relative;
+      padding-left: 18px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
     }
-    .event{
-      display:grid; grid-template-columns: 120px 1fr; gap:12px;
-      padding:12px;
+    .timeline::before{
+      content:"";
+      position:absolute;
+      left: 9px;
+      top: 8px;
+      bottom: 8px;
+      width: 3px;
+      border-radius: 999px;
+      background: linear-gradient(var(--accent), rgba(124,58,237,.55));
+      opacity: .55;
+    }
+    .moment{
+      position:relative;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+      padding:12px 12px 12px 18px;
       border:1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255,255,255,.70);
+      box-shadow: 0 10px 20px rgba(20,0,10,.08);
+    }
+    .moment::before{
+      content:"";
+      position:absolute;
+      left: -1px;
+      top: 16px;
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 0 4px rgba(255,77,166,.16);
+      transform: translateX(-18px);
+    }
+    .momentTop{
+      display:flex;
+      gap:10px;
+      align-items:baseline;
+      flex-wrap:wrap;
+    }
+    .dateTag{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.75);
+      color: var(--muted);
+      font-weight:800;
+    }
+    .momentTitle{margin:0; font-weight:900}
+    .momentNote{margin:0; color:var(--muted)}
+    .momentImg{
+      width:100%;
       border-radius: 14px;
-      background: rgba(255,255,255,.05);
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.65);
+      overflow:hidden;
     }
-    @media (max-width: 520px){ .event{grid-template-columns:1fr} }
-    .date{
-      font-weight:750;
-      color: rgba(255,255,255,.86);
+    .momentImg img{
+      width:100%;
+      height:220px;
+      object-fit:cover;
+      display:block;
     }
-    .gameBox{
-      display:grid; gap:12px;
+    .hint{
+      font-size:13px;
+      color: var(--muted);
+      margin: 10px 0 0;
     }
-    .gameStats{
-      display:flex; gap:10px; flex-wrap:wrap;
+
+    /* Pong game */
+    .gameWrap{
+      display:grid;
+      gap:12px;
     }
-    .pill{
-      font-size:12px; padding:6px 10px;
+    .chooser{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .chooser .pill{
+      font-size:12px;
+      padding:6px 10px;
       border:1px solid var(--line);
       border-radius:999px;
-      background: rgba(255,255,255,.05);
+      background: rgba(255,255,255,.7);
       color: var(--muted);
+      font-weight:800;
     }
+    canvas{
+      width:100%;
+      height:auto;
+      border-radius: 16px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.65);
+      box-shadow: 0 14px 30px rgba(20,0,10,.10);
+      touch-action: none;
+    }
+    .controls{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .hidden{display:none}
+
     input[type="text"]{
       width:100%;
       padding:12px 12px;
       border-radius: 12px;
       border:1px solid var(--line);
-      background: rgba(0,0,0,.20);
+      background: rgba(255,255,255,.75);
       color: var(--text);
       font: inherit;
       outline:none;
@@ -176,6 +322,7 @@
       align-items:center;
     }
     @media (max-width: 520px){ .two{grid-template-columns:1fr} }
+
     footer{
       margin-top:22px;
       padding:16px 4px 0;
@@ -183,7 +330,15 @@
       color: var(--muted);
       display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
     }
-    .hidden{display:none}
+    .footerPill{
+      font-size:12px;
+      padding:6px 10px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background: rgba(255,255,255,.65);
+      color: var(--muted);
+      font-weight:800;
+    }
   </style>
 </head>
 
@@ -191,7 +346,7 @@
   <div class="wrap">
     <header>
       <div class="brand">
-        <span class="heart"></span>
+        <span class="heartBadge"></span>
         <span>Hi Pookie</span>
       </div>
       <div class="tiny" id="today"></div>
@@ -201,15 +356,20 @@
       <section id="home" class="hero">
         <h1>Hi Pookie</h1>
         <p class="sub">
-          I made this little page for you. Pick a box and it will open.
+          I made this for you. Pick a box.
         </p>
 
         <div class="grid">
-          <div class="card tile" role="button" tabindex="0" data-open="timelineView" aria-label="Open timeline">
+          <div class="card tile" role="button" tabindex="0" data-open="storyView" aria-label="Open Our Story">
             <div class="tileTop">
-              <div>
-                <p class="title">Timeline</p>
-                <p class="desc">Tiny moments we can add to over time.</p>
+              <div class="tileLeft">
+                <div class="icon">
+                  <img src="assets/story.png" alt="" onerror="this.remove(); this.parentElement.innerHTML='<span class=iconFallback>💖</span>';">
+                </div>
+                <div>
+                  <p class="title">Our Story</p>
+                  <p class="desc">Little moments, with space for photos later.</p>
+                </div>
               </div>
               <span class="badge">Click</span>
             </div>
@@ -218,9 +378,14 @@
 
           <div class="card tile" role="button" tabindex="0" data-open="gameView" aria-label="Open game">
             <div class="tileTop">
-              <div>
-                <p class="title">Game</p>
-                <p class="desc">A quick little guessing game.</p>
+              <div class="tileLeft">
+                <div class="icon">
+                  <img src="assets/game.png" alt="" onerror="this.remove(); this.parentElement.innerHTML='<span class=iconFallback>🏓</span>';">
+                </div>
+                <div>
+                  <p class="title">Game</p>
+                  <p class="desc">A mini ping pong game with our faces.</p>
+                </div>
               </div>
               <span class="badge">Click</span>
             </div>
@@ -229,9 +394,14 @@
 
           <div class="card tile" role="button" tabindex="0" data-open="infoView" aria-label="Open info">
             <div class="tileTop">
-              <div>
-                <p class="title">Info</p>
-                <p class="desc">Cute facts and a message.</p>
+              <div class="tileLeft">
+                <div class="icon">
+                  <img src="assets/info.png" alt="" onerror="this.remove(); this.parentElement.innerHTML='<span class=iconFallback>💌</span>';">
+                </div>
+                <div>
+                  <p class="title">Info</p>
+                  <p class="desc">Cute facts and a message.</p>
+                </div>
               </div>
               <span class="badge">Click</span>
             </div>
@@ -240,9 +410,14 @@
 
           <div class="card tile" role="button" tabindex="0" data-open="futureView" aria-label="Open future">
             <div class="tileTop">
-              <div>
-                <p class="title">Future</p>
-                <p class="desc">Plans, wishes, and next dates.</p>
+              <div class="tileLeft">
+                <div class="icon">
+                  <img src="assets/future.png" alt="" onerror="this.remove(); this.parentElement.innerHTML='<span class=iconFallback>✨</span>';">
+                </div>
+                <div>
+                  <p class="title">Future</p>
+                  <p class="desc">Plans, wishes, and our next date.</p>
+                </div>
               </div>
               <span class="badge">Click</span>
             </div>
@@ -251,75 +426,89 @@
         </div>
       </section>
 
-      <section id="timelineView" class="card view" aria-label="Timeline view">
+      <section id="storyView" class="card view" aria-label="Our Story view">
         <div class="row">
-          <h2>Timeline</h2>
+          <h2>Our Story</h2>
           <button class="btn" data-back>Back</button>
         </div>
 
-        <div class="panel timeline" id="timelineList">
-          <div class="event">
-            <div class="date">2026-01-01</div>
-            <div>
-              <div><b>Our little start</b></div>
-              <div class="muted">Replace this with the real date and a short memory.</div>
+        <div class="panel timeline" id="storyTimeline">
+          <!-- Example moments. Replace text and optionally add images -->
+          <div class="moment">
+            <div class="momentTop">
+              <span class="dateTag">2026-01-01</span>
+              <p class="momentTitle">Our little start</p>
             </div>
+            <p class="momentNote">Replace this with the real date and a short memory.</p>
+            <!-- Add an image by uncommenting and setting src -->
+            <!--
+            <div class="momentImg">
+              <img src="assets/story/01.jpg" alt="Memory photo">
+            </div>
+            -->
           </div>
-          <div class="event">
-            <div class="date">2026-01-14</div>
-            <div>
-              <div><b>First cozy day</b></div>
-              <div class="muted">Add your own moments here.</div>
+
+          <div class="moment">
+            <div class="momentTop">
+              <span class="dateTag">2026-01-14</span>
+              <p class="momentTitle">First cozy day</p>
             </div>
+            <p class="momentNote">Add a sentence that makes her smile.</p>
           </div>
-          <div class="event">
-            <div class="date">2026-02-02</div>
-            <div>
-              <div><b>A tiny tradition</b></div>
-              <div class="muted">Example: favorite cafe, walk, movie night, anything.</div>
+
+          <div class="moment">
+            <div class="momentTop">
+              <span class="dateTag">2026-02-02</span>
+              <p class="momentTitle">A tiny tradition</p>
             </div>
+            <p class="momentNote">Example: favorite cafe, walk, movie night, anything.</p>
           </div>
         </div>
 
-        <div style="height:12px"></div>
-
-        <div class="panel">
-          <p class="muted" style="margin-top:0">
-            Quick add (saves only in this browser, not uploaded). Good for drafting.
-          </p>
-          <div class="two">
-            <input id="tlInput" type="text" placeholder="Example: 2026-03-01 | We got ice cream and laughed a lot" />
-            <button class="btn" id="tlAdd">Add</button>
-          </div>
-        </div>
+        <p class="hint">
+          Later, you can add photos by uploading them and placing an image tag inside a moment.
+          Example file: assets/story/01.jpg
+        </p>
       </section>
 
       <section id="gameView" class="card view" aria-label="Game view">
         <div class="row">
-          <h2>Game</h2>
+          <h2>Ping Pong</h2>
           <button class="btn" data-back>Back</button>
         </div>
 
-        <div class="panel gameBox">
-          <div class="muted">
-            Guess the secret word. I set it to <b>pookie</b> for now, but you can change it in the code.
+        <div class="panel gameWrap">
+          <div id="pickScreen">
+            <p class="muted" style="margin-top:0">
+              Pick your player first. Upload these files to your repo:
+              <b>assets/adam.png</b> and <b>assets/sophia.png</b>
+            </p>
+
+            <div class="chooser">
+              <button class="btn btnPrimary" id="pickAdam" type="button">Play as Adam</button>
+              <button class="btn btnPrimary" id="pickSophia" type="button">Play as Sophia</button>
+              <span class="pill">W/S or Arrow keys, or drag on phone</span>
+            </div>
           </div>
 
-          <div class="two">
-            <input id="guessInput" type="text" placeholder="Type your guess..." />
-            <button class="btn" id="guessBtn">Guess</button>
-          </div>
+          <div id="pongScreen" class="hidden">
+            <div class="controls">
+              <div class="chooser">
+                <span class="pill">Score: <b id="score">0</b></span>
+                <span class="pill">Best: <b id="best">0</b></span>
+              </div>
+              <div class="chooser">
+                <button class="btn" id="pauseBtn" type="button">Pause</button>
+                <button class="btn" id="restartBtn" type="button">Restart</button>
+              </div>
+            </div>
 
-          <div class="gameStats">
-            <span class="pill">Attempts: <b id="attempts">0</b></span>
-            <span class="pill">Best hint: <b id="hint">-</b></span>
-          </div>
+            <canvas id="pong" width="900" height="520" aria-label="Pong game canvas"></canvas>
 
-          <div id="gameMsg" class="panel" style="background: rgba(255,255,255,.05)">
-            Type a guess and press Guess.
+            <p class="hint">
+              If faces do not show, double check the filenames and that they are inside the assets folder.
+            </p>
           </div>
-
-          <button class="btn" id="resetBtn" type="button">Reset game</button>
         </div>
       </section>
 
@@ -330,11 +519,9 @@
         </div>
 
         <div class="panel">
-          <p style="margin-top:0">
-            <b>Message</b>
-          </p>
+          <p style="margin-top:0"><b>Message</b></p>
           <p class="muted" style="margin-top:0">
-            Write your message here. Example: I appreciate you, I am proud of you, and I am really happy we have each other.
+            Write your message here. Example: I love you, I am proud of you, and I feel lucky to have you.
           </p>
 
           <div style="height:10px"></div>
@@ -343,7 +530,7 @@
           <ul class="muted" style="margin:8px 0 0; padding-left:18px">
             <li>Your laugh is my favorite sound.</li>
             <li>I love how safe it feels to be with you.</li>
-            <li>I am collecting moments with you like souvenirs.</li>
+            <li>I want a million tiny days with you.</li>
           </ul>
         </div>
       </section>
@@ -355,14 +542,14 @@
         </div>
 
         <div class="panel">
-          <p style="margin-top:0" class="muted">
+          <p class="muted" style="margin-top:0">
             Add plans and a countdown to the next date.
           </p>
 
-          <div class="panel" style="background: rgba(255,255,255,.05)">
+          <div class="panel" style="background: rgba(255,255,255,.70)">
             <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center">
-              <span class="pill">Next date: <b id="nextDateLabel">2026-02-14</b></span>
-              <span class="pill">Days left: <b id="daysLeft">0</b></span>
+              <span class="footerPill">Next date: <b id="nextDateLabel">2026-02-14</b></span>
+              <span class="footerPill">Days left: <b id="daysLeft">0</b></span>
             </div>
           </div>
 
@@ -376,11 +563,11 @@
 
           <div style="height:12px"></div>
 
-          <div class="panel">
+          <div class="panel" style="background: rgba(255,255,255,.70)">
             <p style="margin:0 0 8px"><b>Change next date</b></p>
             <div class="two">
               <input id="nextDateInput" type="text" placeholder="YYYY-MM-DD" />
-              <button class="btn" id="setNextDate">Set</button>
+              <button class="btn" id="setNextDate" type="button">Set</button>
             </div>
             <p class="muted" style="margin:8px 0 0; font-size:13px">
               This saves only in this browser.
@@ -390,8 +577,8 @@
       </section>
 
       <footer>
-        <span class="pill">Made with love</span>
-        <span class="pill" id="footYear">©</span>
+        <span class="footerPill">Made with love</span>
+        <span class="footerPill" id="footYear">©</span>
       </footer>
     </main>
   </div>
@@ -429,109 +616,17 @@
       });
 
       document.querySelectorAll("[data-back]").forEach(btn => {
-        btn.addEventListener("click", showHome);
+        btn.addEventListener("click", () => {
+          stopPong();
+          showHome();
+        });
       });
-    }
-
-    // Timeline local save
-    const TL_KEY = "pookie_timeline_items_v1";
-    function loadTimeline(){
-      try{
-        const raw = localStorage.getItem(TL_KEY);
-        if(!raw) return [];
-        const arr = JSON.parse(raw);
-        return Array.isArray(arr) ? arr : [];
-      }catch{ return []; }
-    }
-    function saveTimeline(items){
-      localStorage.setItem(TL_KEY, JSON.stringify(items));
-    }
-    function renderTimeline(){
-      const items = loadTimeline();
-      const container = $("timelineList");
-      if(items.length === 0) return;
-
-      items.forEach(it => {
-        const div = document.createElement("div");
-        div.className = "event";
-        div.innerHTML =
-          '<div class="date"></div>' +
-          '<div><div><b></b></div><div class="muted"></div></div>';
-        div.querySelector(".date").textContent = it.date;
-        div.querySelector("b").textContent = it.title;
-        div.querySelector(".muted").textContent = it.note;
-        container.appendChild(div);
-      });
-    }
-    function addTimelineFromInput(){
-      const raw = $("tlInput").value.trim();
-      if(!raw) return;
-
-      // Format: YYYY-MM-DD | Title | Note
-      const parts = raw.split("|").map(s => s.trim()).filter(Boolean);
-      const date = parts[0] || "YYYY-MM-DD";
-      const title = parts[1] || "Memory";
-      const note = parts[2] || "Add details here.";
-
-      const items = loadTimeline();
-      items.unshift({ date, title, note });
-      saveTimeline(items);
-      $("tlInput").value = "";
-      location.reload();
-    }
-
-    // Game: guess the word
-    const SECRET = "pookie"; // change this if you want
-    let attempts = 0;
-
-    function commonPrefixLen(a,b){
-      const n = Math.min(a.length, b.length);
-      let i = 0;
-      while(i < n && a[i] === b[i]) i++;
-      return i;
-    }
-
-    function guess(){
-      const g = $("guessInput").value.trim().toLowerCase();
-      if(!g){
-        $("gameMsg").textContent = "Type something first.";
-        return;
-      }
-      attempts += 1;
-      $("attempts").textContent = String(attempts);
-
-      if(g === SECRET){
-        $("gameMsg").textContent = "Correct! You win. 💖";
-        $("hint").textContent = "Perfect";
-        return;
-      }
-
-      const pref = commonPrefixLen(g, SECRET);
-      const hint = pref === 0 ? "No match" : ("Matches first " + pref + " letter(s)");
-      $("hint").textContent = hint;
-
-      if(g.length < SECRET.length){
-        $("gameMsg").textContent = "Not quite. Hint: your word is shorter than the secret.";
-      }else if(g.length > SECRET.length){
-        $("gameMsg").textContent = "Not quite. Hint: your word is longer than the secret.";
-      }else{
-        $("gameMsg").textContent = "So close. Hint: same length, different letters.";
-      }
-    }
-
-    function resetGame(){
-      attempts = 0;
-      $("attempts").textContent = "0";
-      $("hint").textContent = "-";
-      $("guessInput").value = "";
-      $("gameMsg").textContent = "Type a guess and press Guess.";
     }
 
     // Future countdown local save
-    const NEXT_KEY = "pookie_next_date_v1";
+    const NEXT_KEY = "pookie_next_date_v2";
     function getNextDate(){
-      const raw = localStorage.getItem(NEXT_KEY) || "2026-02-14";
-      return raw;
+      return localStorage.getItem(NEXT_KEY) || "2026-02-14";
     }
     function setNextDate(raw){
       localStorage.setItem(NEXT_KEY, raw);
@@ -552,24 +647,345 @@
       $("daysLeft").textContent = String(Math.max(0, left));
     }
 
+    // Pong game
+    const canvas = $("pong");
+    const ctx = canvas.getContext("2d");
+
+    const imgAdam = new Image();
+    const imgSophia = new Image();
+    imgAdam.src = "assets/adam.png";
+    imgSophia.src = "assets/sophia.png";
+
+    let running = false;
+    let paused = false;
+    let rafId = 0;
+
+    const state = {
+      player: "adam",
+      score: 0,
+      best: 0,
+      keys: { up:false, down:false }
+    };
+
+    const game = {
+      w: canvas.width,
+      h: canvas.height,
+      paddleW: 18,
+      paddleH: 90,
+      ballR: 10,
+      player: { x: 40, y: 0, vy: 0, speed: 520 },
+      ai: { x: 0, y: 0, speed: 420 },
+      ball: { x: 0, y: 0, vx: 0, vy: 0, speed: 520 }
+    };
+
+    function resetRound(){
+      game.w = canvas.width;
+      game.h = canvas.height;
+
+      game.player.y = (game.h - game.paddleH) / 2;
+      game.ai.x = game.w - 40 - game.paddleW;
+      game.ai.y = (game.h - game.paddleH) / 2;
+
+      game.ball.x = game.w / 2;
+      game.ball.y = game.h / 2;
+
+      const dir = Math.random() < 0.5 ? -1 : 1;
+      game.ball.vx = dir * (game.ball.speed * 0.78);
+      game.ball.vy = (Math.random() * 2 - 1) * (game.ball.speed * 0.55);
+    }
+
+    function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
+
+    function drawSoftHearts(){
+      ctx.save();
+      ctx.globalAlpha = 0.22;
+      for(let i=0;i<16;i++){
+        const x = (i * 60 + (state.score * 13) % 60) % game.w;
+        const y = (i * 35 + (state.score * 9) % 40) % game.h;
+        ctx.fillStyle = "#ff4da6";
+        heartPath(x + 80, y + 40, 10 + (i%3)*2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    function heartPath(cx, cy, s){
+      ctx.beginPath();
+      ctx.moveTo(cx, cy + s * 0.6);
+      ctx.bezierCurveTo(cx - s, cy - s * 0.2, cx - s * 1.4, cy + s * 1.2, cx, cy + s * 1.8);
+      ctx.bezierCurveTo(cx + s * 1.4, cy + s * 1.2, cx + s, cy - s * 0.2, cx, cy + s * 0.6);
+      ctx.closePath();
+    }
+
+    function drawPaddleWithFace(x,y,isPlayer){
+      ctx.save();
+      ctx.fillStyle = "rgba(255,255,255,.75)";
+      ctx.strokeStyle = "rgba(25,10,20,.14)";
+      ctx.lineWidth = 1;
+      roundRect(x, y, game.paddleW, game.paddleH, 12);
+      ctx.fill();
+      ctx.stroke();
+
+      const img = isPlayer
+        ? (state.player === "adam" ? imgAdam : imgSophia)
+        : (state.player === "adam" ? imgSophia : imgAdam);
+
+      const pad = 6;
+      const size = game.paddleW + 40;
+      const ix = x + (game.paddleW/2) - (size/2);
+      const iy = y + (game.paddleH/2) - (size/2);
+
+      if(img.complete && img.naturalWidth > 0){
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(x + game.paddleW/2, y + game.paddleH/2, Math.min(38, game.paddleH/2 - 6), 0, Math.PI*2);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(img, ix, iy, size, size);
+        ctx.restore();
+      }else{
+        ctx.fillStyle = "rgba(25,10,20,.55)";
+        ctx.font = "700 14px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+        ctx.textAlign = "center";
+        ctx.fillText(isPlayer ? (state.player === "adam" ? "A" : "S") : (state.player === "adam" ? "S" : "A"),
+          x + game.paddleW/2, y + game.paddleH/2 + 5);
+      }
+
+      ctx.restore();
+    }
+
+    function roundRect(x,y,w,h,r){
+      const rr = Math.min(r, w/2, h/2);
+      ctx.beginPath();
+      ctx.moveTo(x+rr, y);
+      ctx.arcTo(x+w, y, x+w, y+h, rr);
+      ctx.arcTo(x+w, y+h, x, y+h, rr);
+      ctx.arcTo(x, y+h, x, y, rr);
+      ctx.arcTo(x, y, x+w, y, rr);
+      ctx.closePath();
+    }
+
+    function drawBall(){
+      ctx.save();
+      ctx.fillStyle = "rgba(255,77,166,.95)";
+      ctx.strokeStyle = "rgba(25,10,20,.14)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(game.ball.x, game.ball.y, game.ballR, 0, Math.PI*2);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawCenterLine(){
+      ctx.save();
+      ctx.globalAlpha = 0.35;
+      ctx.strokeStyle = "rgba(25,10,20,.22)";
+      ctx.lineWidth = 3;
+      ctx.setLineDash([10, 14]);
+      ctx.beginPath();
+      ctx.moveTo(game.w/2, 20);
+      ctx.lineTo(game.w/2, game.h - 20);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function update(dt){
+      // Player input
+      let dy = 0;
+      if(state.keys.up) dy -= 1;
+      if(state.keys.down) dy += 1;
+      game.player.y += dy * game.player.speed * dt;
+      game.player.y = clamp(game.player.y, 10, game.h - game.paddleH - 10);
+
+      // Touch control uses targetY if set
+      if(touchTargetY !== null){
+        const want = touchTargetY - game.paddleH/2;
+        const diff = want - game.player.y;
+        game.player.y += clamp(diff, -game.player.speed*dt, game.player.speed*dt);
+        game.player.y = clamp(game.player.y, 10, game.h - game.paddleH - 10);
+      }
+
+      // AI follows ball with some smoothing
+      const aiCenter = game.ai.y + game.paddleH/2;
+      const diff = game.ball.y - aiCenter;
+      game.ai.y += clamp(diff, -game.ai.speed*dt, game.ai.speed*dt);
+      game.ai.y = clamp(game.ai.y, 10, game.h - game.paddleH - 10);
+
+      // Move ball
+      game.ball.x += game.ball.vx * dt;
+      game.ball.y += game.ball.vy * dt;
+
+      // Bounce top/bottom
+      if(game.ball.y - game.ballR <= 10){
+        game.ball.y = 10 + game.ballR;
+        game.ball.vy *= -1;
+      }
+      if(game.ball.y + game.ballR >= game.h - 10){
+        game.ball.y = game.h - 10 - game.ballR;
+        game.ball.vy *= -1;
+      }
+
+      // Paddle collisions
+      const p = { x: game.player.x, y: game.player.y, w: game.paddleW, h: game.paddleH };
+      const a = { x: game.ai.x, y: game.ai.y, w: game.paddleW, h: game.paddleH };
+
+      // Player paddle
+      if(circleRectHit(game.ball.x, game.ball.y, game.ballR, p.x, p.y, p.w, p.h) && game.ball.vx < 0){
+        game.ball.x = p.x + p.w + game.ballR + 0.5;
+        const rel = (game.ball.y - (p.y + p.h/2)) / (p.h/2);
+        const ang = rel * 0.9;
+        const speed = Math.min(900, Math.hypot(game.ball.vx, game.ball.vy) * 1.03);
+        game.ball.vx = Math.cos(ang) * speed;
+        game.ball.vy = Math.sin(ang) * speed;
+        state.score += 1;
+        $("score").textContent = String(state.score);
+        state.best = Math.max(state.best, state.score);
+        $("best").textContent = String(state.best);
+      }
+
+      // AI paddle
+      if(circleRectHit(game.ball.x, game.ball.y, game.ballR, a.x, a.y, a.w, a.h) && game.ball.vx > 0){
+        game.ball.x = a.x - game.ballR - 0.5;
+        const rel = (game.ball.y - (a.y + a.h/2)) / (a.h/2);
+        const ang = Math.PI - (rel * 0.9);
+        const speed = Math.min(900, Math.hypot(game.ball.vx, game.ball.vy) * 1.02);
+        game.ball.vx = Math.cos(ang) * speed;
+        game.ball.vy = Math.sin(ang) * speed;
+      }
+
+      // Out of bounds
+      if(game.ball.x < -40 || game.ball.x > game.w + 40){
+        state.score = 0;
+        $("score").textContent = "0";
+        resetRound();
+      }
+    }
+
+    function circleRectHit(cx,cy,cr, rx,ry,rw,rh){
+      const closestX = clamp(cx, rx, rx + rw);
+      const closestY = clamp(cy, ry, ry + rh);
+      const dx = cx - closestX;
+      const dy = cy - closestY;
+      return (dx*dx + dy*dy) <= cr*cr;
+    }
+
+    function draw(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+
+      // Soft background inside the canvas
+      ctx.save();
+      const g = ctx.createLinearGradient(0,0,canvas.width,canvas.height);
+      g.addColorStop(0, "rgba(255,255,255,.78)");
+      g.addColorStop(1, "rgba(255,255,255,.62)");
+      ctx.fillStyle = g;
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.restore();
+
+      drawSoftHearts();
+      drawCenterLine();
+
+      game.player.x = 40;
+      game.ai.x = canvas.width - 40 - game.paddleW;
+
+      drawPaddleWithFace(game.player.x, game.player.y, true);
+      drawPaddleWithFace(game.ai.x, game.ai.y, false);
+      drawBall();
+
+      if(paused){
+        ctx.save();
+        ctx.fillStyle = "rgba(25,10,20,.70)";
+        ctx.font = "900 40px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("Paused", canvas.width/2, canvas.height/2);
+        ctx.restore();
+      }
+    }
+
+    let lastT = 0;
+    function loop(t){
+      if(!running){ return; }
+      if(!lastT) lastT = t;
+      const dt = Math.min(0.033, (t - lastT) / 1000);
+      lastT = t;
+
+      if(!paused){
+        update(dt);
+      }
+      draw();
+      rafId = requestAnimationFrame(loop);
+    }
+
+    function startPong(player){
+      state.player = player;
+      $("pickScreen").classList.add("hidden");
+      $("pongScreen").classList.remove("hidden");
+
+      state.score = 0;
+      $("score").textContent = "0";
+
+      resetRound();
+      paused = false;
+      $("pauseBtn").textContent = "Pause";
+
+      running = true;
+      lastT = 0;
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(loop);
+    }
+
+    function stopPong(){
+      running = false;
+      paused = false;
+      cancelAnimationFrame(rafId);
+      $("pongScreen").classList.add("hidden");
+      $("pickScreen").classList.remove("hidden");
+    }
+
+    // Keyboard controls
+    function onKey(e, down){
+      if(e.key === "w" || e.key === "W" || e.key === "ArrowUp"){
+        state.keys.up = down;
+        e.preventDefault();
+      }
+      if(e.key === "s" || e.key === "S" || e.key === "ArrowDown"){
+        state.keys.down = down;
+        e.preventDefault();
+      }
+      if(e.key === " " && down){
+        paused = !paused;
+        $("pauseBtn").textContent = paused ? "Resume" : "Pause";
+        e.preventDefault();
+      }
+    }
+    window.addEventListener("keydown", (e) => onKey(e,true), { passive:false });
+    window.addEventListener("keyup", (e) => onKey(e,false), { passive:false });
+
+    // Touch drag control
+    let touchTargetY = null;
+    function setTouchTarget(clientY){
+      const rect = canvas.getBoundingClientRect();
+      const y = (clientY - rect.top) * (canvas.height / rect.height);
+      touchTargetY = clamp(y, 10, canvas.height - 10);
+    }
+    canvas.addEventListener("pointerdown", (e) => {
+      canvas.setPointerCapture(e.pointerId);
+      setTouchTarget(e.clientY);
+    });
+    canvas.addEventListener("pointermove", (e) => {
+      if(e.buttons === 1) setTouchTarget(e.clientY);
+    });
+    canvas.addEventListener("pointerup", () => { touchTargetY = null; });
+    canvas.addEventListener("pointercancel", () => { touchTargetY = null; });
+
     function init(){
       $("today").textContent = fmtToday();
       $("footYear").textContent = "© " + new Date().getFullYear();
 
       wireTiles();
 
-      renderTimeline();
-      $("tlAdd").addEventListener("click", addTimelineFromInput);
-      $("tlInput").addEventListener("keydown", (e) => {
-        if(e.key === "Enter") addTimelineFromInput();
-      });
-
-      $("guessBtn").addEventListener("click", guess);
-      $("guessInput").addEventListener("keydown", (e) => {
-        if(e.key === "Enter") guess();
-      });
-      $("resetBtn").addEventListener("click", resetGame);
-
+      // Future
       updateFuture();
       $("setNextDate").addEventListener("click", () => {
         const raw = $("nextDateInput").value.trim();
@@ -582,8 +998,24 @@
         updateFuture();
       });
       setInterval(updateFuture, 60 * 1000);
+
+      // Game buttons
+      $("pickAdam").addEventListener("click", () => startPong("adam"));
+      $("pickSophia").addEventListener("click", () => startPong("sophia"));
+
+      $("pauseBtn").addEventListener("click", () => {
+        paused = !paused;
+        $("pauseBtn").textContent = paused ? "Resume" : "Pause";
+      });
+
+      $("restartBtn").addEventListener("click", () => {
+        state.score = 0;
+        $("score").textContent = "0";
+        resetRound();
+      });
     }
     init();
   </script>
 </body>
 </html>
+
