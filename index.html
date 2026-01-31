@@ -36,7 +36,6 @@
       overflow-x:hidden;
     }
 
-    /* Heart pattern overlay */
     body::before{
       content:"";
       position:fixed;
@@ -191,7 +190,6 @@
     }
     .muted{color:var(--muted)}
 
-    /* Our Story timeline */
     .timeline{
       position:relative;
       padding-left: 18px;
@@ -250,26 +248,12 @@
     }
     .momentTitle{margin:0; font-weight:900}
     .momentNote{margin:0; color:var(--muted)}
-    .momentImg{
-      width:100%;
-      border-radius: 14px;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.65);
-      overflow:hidden;
-    }
-    .momentImg img{
-      width:100%;
-      height:220px;
-      object-fit:cover;
-      display:block;
-    }
     .hint{
       font-size:13px;
       color: var(--muted);
       margin: 10px 0 0;
     }
 
-    /* Pong game */
     .gameWrap{
       display:grid;
       gap:12px;
@@ -384,7 +368,7 @@
                 </div>
                 <div>
                   <p class="title">Game</p>
-                  <p class="desc">A mini ping pong game with our faces.</p>
+                  <p class="desc">A Flappy Bird type game with our faces.</p>
                 </div>
               </div>
               <span class="badge">Click</span>
@@ -433,19 +417,12 @@
         </div>
 
         <div class="panel timeline" id="storyTimeline">
-          <!-- Example moments. Replace text and optionally add images -->
           <div class="moment">
             <div class="momentTop">
               <span class="dateTag">2026-01-01</span>
               <p class="momentTitle">Our little start</p>
             </div>
             <p class="momentNote">Replace this with the real date and a short memory.</p>
-            <!-- Add an image by uncommenting and setting src -->
-            <!--
-            <div class="momentImg">
-              <img src="assets/story/01.jpg" alt="Memory photo">
-            </div>
-            -->
           </div>
 
           <div class="moment">
@@ -471,17 +448,6 @@
         </p>
       </section>
 
-
-
-
-
-
-
-
-
-
-
-      
       <section id="gameView" class="card view" aria-label="Game view">
         <div class="row">
           <h2>Flappy Love</h2>
@@ -524,7 +490,6 @@
           </div>
         </div>
       </section>
-
 
       <section id="infoView" class="card view" aria-label="Info view">
         <div class="row">
@@ -631,13 +596,12 @@
 
       document.querySelectorAll("[data-back]").forEach(btn => {
         btn.addEventListener("click", () => {
-          stopFloppy();
+          stopFlappy();
           showHome();
         });
       });
     }
 
-    // Future countdown local save
     const NEXT_KEY = "pookie_next_date_v2";
     function getNextDate(){
       return localStorage.getItem(NEXT_KEY) || "2026-02-14";
@@ -662,399 +626,394 @@
     }
 
     // Flappy game
-const canvas = $("flappy");
-const ctx = canvas.getContext("2d");
+    const canvas = $("flappy");
+    const ctx = canvas.getContext("2d");
 
-const imgAdam = new Image();
-const imgSophia = new Image();
-imgAdam.src = "assets/adam.png";
-imgSophia.src = "assets/sophia.png";
+    const imgAdam = new Image();
+    const imgSophia = new Image();
+    imgAdam.src = "assets/adam.png";
+    imgSophia.src = "assets/sophia.png";
 
-let running = false;
-let paused = false;
-let rafId = 0;
+    let running = false;
+    let paused = false;
+    let rafId = 0;
 
-const BEST_KEY = "pookie_flappy_best_v1";
+    const BEST_KEY = "pookie_flappy_best_v1";
 
-const state = {
-  player: "adam",
-  score: 0,
-  best: 0,
-  started: false,
-  gameOver: false,
-  lastT: 0,
-  elapsed: 0
-};
+    const state = {
+      player: "adam",
+      score: 0,
+      best: 0,
+      started: false,
+      gameOver: false,
+      lastT: 0,
+      elapsed: 0
+    };
 
-function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
+    function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
 
-function loadBest(){
-  const raw = localStorage.getItem(BEST_KEY);
-  const n = raw ? parseInt(raw, 10) : 0;
-  state.best = Number.isFinite(n) ? n : 0;
-  $("best").textContent = String(state.best);
-}
-function saveBest(){
-  localStorage.setItem(BEST_KEY, String(state.best));
-}
+    function loadBest(){
+      const raw = localStorage.getItem(BEST_KEY);
+      const n = raw ? parseInt(raw, 10) : 0;
+      state.best = Number.isFinite(n) ? n : 0;
+      $("best").textContent = String(state.best);
+    }
+    function saveBest(){
+      localStorage.setItem(BEST_KEY, String(state.best));
+    }
 
-const game = {
-  bird: { x: 230, y: 260, vy: 0, r: 22 },
+    const game = {
+      bird: { x: 230, y: 260, vy: 0, r: 22 },
+      gravity: 1500,
+      flap: -520,
+      pipeW: 74,
+      pipes: [],
+      spawnTimer: 0,
+      base: { speed: 255, gap: 190, interval: 1.55 },
+      cur:  { speed: 255, gap: 190, interval: 1.55 }
+    };
 
-  gravity: 1500,
-  flap: -520,
+    function difficultyLabel(){
+      if(state.elapsed < 18) return "Easy";
+      if(state.elapsed < 40) return "Medium";
+      if(state.elapsed < 70) return "Hard";
+      return "Chaos";
+    }
 
-  pipeW: 74,
-  pipes: [],
-  spawnTimer: 0,
+    function resetFlappy(){
+      state.score = 0;
+      $("score").textContent = "0";
+      $("difficultyPill").textContent = "Easy";
 
-  base: { speed: 255, gap: 190, interval: 1.55 },
-  cur:  { speed: 255, gap: 190, interval: 1.55 }
-};
+      state.started = false;
+      state.gameOver = false;
+      state.elapsed = 0;
 
-function difficultyLabel(){
-  if(state.elapsed < 18) return "Easy";
-  if(state.elapsed < 40) return "Medium";
-  if(state.elapsed < 70) return "Hard";
-  return "Chaos";
-}
+      game.bird.x = 230;
+      game.bird.y = canvas.height * 0.5;
+      game.bird.vy = 0;
 
-function resetFlappy(){
-  state.score = 0;
-  $("score").textContent = "0";
-  $("difficultyPill").textContent = "Easy";
+      game.pipes = [];
+      game.spawnTimer = 0;
 
-  state.started = false;
-  state.gameOver = false;
-  state.elapsed = 0;
+      game.cur.speed = game.base.speed;
+      game.cur.gap = game.base.gap;
+      game.cur.interval = game.base.interval;
 
-  game.bird.x = 230;
-  game.bird.y = canvas.height * 0.5;
-  game.bird.vy = 0;
+      paused = false;
+      $("pauseBtn").textContent = "Pause";
+    }
 
-  game.pipes = [];
-  game.spawnTimer = 0;
+    function startFlappy(player){
+      state.player = player;
 
-  game.cur.speed = game.base.speed;
-  game.cur.gap = game.base.gap;
-  game.cur.interval = game.base.interval;
+      $("pickScreen").classList.add("hidden");
+      $("flappyScreen").classList.remove("hidden");
 
-  paused = false;
-  $("pauseBtn").textContent = "Pause";
-}
+      loadBest();
+      resetFlappy();
 
-function startFlappy(player){
-  state.player = player;
+      running = true;
+      state.lastT = 0;
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(loop);
+    }
 
-  $("pickScreen").classList.add("hidden");
-  $("flappyScreen").classList.remove("hidden");
+    function stopFlappy(){
+      running = false;
+      paused = false;
+      cancelAnimationFrame(rafId);
 
-  loadBest();
-  resetFlappy();
+      $("flappyScreen").classList.add("hidden");
+      $("pickScreen").classList.remove("hidden");
+    }
 
-  running = true;
-  state.lastT = 0;
-  cancelAnimationFrame(rafId);
-  rafId = requestAnimationFrame(loop);
-}
+    function flap(){
+      if(!running) return;
+      if(state.gameOver) return;
 
-function stopFlappy(){
-  running = false;
-  paused = false;
-  cancelAnimationFrame(rafId);
+      if(!state.started){
+        state.started = true;
+        game.bird.vy = game.flap * 0.75;
+        return;
+      }
+      game.bird.vy = game.flap;
+    }
 
-  $("flappyScreen").classList.add("hidden");
-  $("pickScreen").classList.remove("hidden");
-}
+    function circleRectHit(cx, cy, cr, rx, ry, rw, rh){
+      const closestX = clamp(cx, rx, rx + rw);
+      const closestY = clamp(cy, ry, ry + rh);
+      const dx = cx - closestX;
+      const dy = cy - closestY;
+      return (dx*dx + dy*dy) <= cr*cr;
+    }
 
-function flap(){
-  if(!running) return;
-  if(state.gameOver) return;
+    function spawnPipe(){
+      const topMargin = 70;
+      const bottomMargin = 70;
+      const gap = game.cur.gap;
 
-  if(!state.started){
-    state.started = true;
-    game.bird.vy = game.flap * 0.75;
-    return;
-  }
-  game.bird.vy = game.flap;
-}
+      const usable = canvas.height - topMargin - bottomMargin - gap;
+      const gapTop = topMargin + Math.random() * Math.max(10, usable);
 
-function circleRectHit(cx, cy, cr, rx, ry, rw, rh){
-  const closestX = clamp(cx, rx, rx + rw);
-  const closestY = clamp(cy, ry, ry + rh);
-  const dx = cx - closestX;
-  const dy = cy - closestY;
-  return (dx*dx + dy*dy) <= cr*cr;
-}
+      game.pipes.push({
+        x: canvas.width + 40,
+        gapTop,
+        gapH: gap,
+        passed: false
+      });
+    }
 
-function spawnPipe(){
-  const topMargin = 70;
-  const bottomMargin = 70;
-  const gap = game.cur.gap;
+    function rampDifficulty(){
+      const t = state.elapsed;
 
-  const usable = canvas.height - topMargin - bottomMargin - gap;
-  const gapTop = topMargin + Math.random() * Math.max(10, usable);
+      const speed = game.base.speed + t * 2.35;
+      const gap = game.base.gap - t * 0.85;
+      const interval = game.base.interval - t * 0.006;
 
-  game.pipes.push({
-    x: canvas.width + 40,
-    gapTop,
-    gapH: gap,
-    passed: false
-  });
-}
+      game.cur.speed = clamp(speed, game.base.speed, 520);
+      game.cur.gap = clamp(gap, 118, game.base.gap);
+      game.cur.interval = clamp(interval, 0.92, game.base.interval);
 
-function rampDifficulty(){
-  const t = state.elapsed;
+      $("difficultyPill").textContent = difficultyLabel();
+    }
 
-  const speed = game.base.speed + t * 2.35;
-  const gap = game.base.gap - t * 0.85;
-  const interval = game.base.interval - t * 0.006;
+    function update(dt){
+      if(paused) return;
+      if(state.gameOver) return;
 
-  game.cur.speed = clamp(speed, game.base.speed, 520);
-  game.cur.gap = clamp(gap, 118, game.base.gap);
-  game.cur.interval = clamp(interval, 0.92, game.base.interval);
+      if(!state.started){
+        game.bird.vy = 0;
+        game.bird.y += Math.sin(performance.now() / 240) * 0.35;
+        game.bird.y = clamp(game.bird.y, 70, canvas.height - 70);
+        return;
+      }
 
-  $("difficultyPill").textContent = difficultyLabel();
-}
+      state.elapsed += dt;
+      rampDifficulty();
 
-function update(dt){
-  if(paused) return;
-  if(state.gameOver) return;
+      game.bird.vy += game.gravity * dt;
+      game.bird.y += game.bird.vy * dt;
 
-  if(!state.started){
-    game.bird.vy = 0;
-    game.bird.y += Math.sin(performance.now() / 240) * 0.35;
-    game.bird.y = clamp(game.bird.y, 70, canvas.height - 70);
-    return;
-  }
+      game.spawnTimer += dt;
+      if(game.spawnTimer >= game.cur.interval){
+        game.spawnTimer = 0;
+        spawnPipe();
+      }
 
-  state.elapsed += dt;
-  rampDifficulty();
+      for(const p of game.pipes){
+        p.x -= game.cur.speed * dt;
 
-  game.bird.vy += game.gravity * dt;
-  game.bird.y += game.bird.vy * dt;
+        if(!p.passed && p.x + game.pipeW < game.bird.x - game.bird.r){
+          p.passed = true;
+          state.score += 1;
+          $("score").textContent = String(state.score);
+          if(state.score > state.best){
+            state.best = state.score;
+            $("best").textContent = String(state.best);
+            saveBest();
+          }
+        }
+      }
 
-  game.spawnTimer += dt;
-  if(game.spawnTimer >= game.cur.interval){
-    game.spawnTimer = 0;
-    spawnPipe();
-  }
+      game.pipes = game.pipes.filter(p => p.x > -game.pipeW - 80);
 
-  for(const p of game.pipes){
-    p.x -= game.cur.speed * dt;
+      const ceiling = 50;
+      const floor = canvas.height - 50;
 
-    if(!p.passed && p.x + game.pipeW < game.bird.x - game.bird.r){
-      p.passed = true;
-      state.score += 1;
-      $("score").textContent = String(state.score);
-      if(state.score > state.best){
-        state.best = state.score;
-        $("best").textContent = String(state.best);
-        saveBest();
+      if(game.bird.y - game.bird.r <= ceiling){
+        game.bird.y = ceiling + game.bird.r;
+        game.bird.vy = 0;
+      }
+      if(game.bird.y + game.bird.r >= floor){
+        state.gameOver = true;
+      }
+
+      for(const p of game.pipes){
+        const topRect = { x: p.x, y: 0, w: game.pipeW, h: p.gapTop };
+        const botRect = { x: p.x, y: p.gapTop + p.gapH, w: game.pipeW, h: canvas.height - (p.gapTop + p.gapH) };
+
+        if(
+          circleRectHit(game.bird.x, game.bird.y, game.bird.r, topRect.x, topRect.y, topRect.w, topRect.h) ||
+          circleRectHit(game.bird.x, game.bird.y, game.bird.r, botRect.x, botRect.y, botRect.w, botRect.h)
+        ){
+          state.gameOver = true;
+          break;
+        }
       }
     }
-  }
 
-  game.pipes = game.pipes.filter(p => p.x > -game.pipeW - 80);
-
-  const ceiling = 50;
-  const floor = canvas.height - 50;
-  if(game.bird.y - game.bird.r <= ceiling){
-    game.bird.y = ceiling + game.bird.r;
-    game.bird.vy = 0;
-  }
-  if(game.bird.y + game.bird.r >= floor){
-    state.gameOver = true;
-  }
-
-  for(const p of game.pipes){
-    const topRect = { x: p.x, y: 0, w: game.pipeW, h: p.gapTop };
-    const botRect = { x: p.x, y: p.gapTop + p.gapH, w: game.pipeW, h: canvas.height - (p.gapTop + p.gapH) };
-
-    if(
-      circleRectHit(game.bird.x, game.bird.y, game.bird.r, topRect.x, topRect.y, topRect.w, topRect.h) ||
-      circleRectHit(game.bird.x, game.bird.y, game.bird.r, botRect.x, botRect.y, botRect.w, botRect.h)
-    ){
-      state.gameOver = true;
-      break;
-    }
-  }
-}
-
-function heartPath(cx, cy, s){
-  ctx.beginPath();
-  ctx.moveTo(cx, cy + s * 0.6);
-  ctx.bezierCurveTo(cx - s, cy - s * 0.2, cx - s * 1.4, cy + s * 1.2, cx, cy + s * 1.8);
-  ctx.bezierCurveTo(cx + s * 1.4, cy + s * 1.2, cx + s, cy - s * 0.2, cx, cy + s * 0.6);
-  ctx.closePath();
-}
-
-function drawSoftHearts(){
-  ctx.save();
-  ctx.globalAlpha = 0.18;
-  for(let i=0;i<14;i++){
-    const x = (i * 75 + (state.score * 11) % 75) % canvas.width;
-    const y = (i * 48 + (state.score * 7) % 52) % canvas.height;
-    ctx.fillStyle = "#ff4da6";
-    heartPath(x + 60, y + 34, 10 + (i%3)*2);
-    ctx.fill();
-  }
-  ctx.restore();
-}
-
-function drawPipes(){
-  for(const p of game.pipes){
-    ctx.save();
-    ctx.fillStyle = "rgba(255,255,255,.78)";
-    ctx.strokeStyle = "rgba(25,10,20,.14)";
-    ctx.lineWidth = 1;
-
-    // Using roundRect if available
-    if(ctx.roundRect){
+    function heartPath(cx, cy, s){
       ctx.beginPath();
-      ctx.roundRect(p.x, 0, game.pipeW, p.gapTop, 14);
+      ctx.moveTo(cx, cy + s * 0.6);
+      ctx.bezierCurveTo(cx - s, cy - s * 0.2, cx - s * 1.4, cy + s * 1.2, cx, cy + s * 1.8);
+      ctx.bezierCurveTo(cx + s * 1.4, cy + s * 1.2, cx + s, cy - s * 0.2, cx, cy + s * 0.6);
+      ctx.closePath();
+    }
+
+    function drawSoftHearts(){
+      ctx.save();
+      ctx.globalAlpha = 0.18;
+      for(let i=0;i<14;i++){
+        const x = (i * 75 + (state.score * 11) % 75) % canvas.width;
+        const y = (i * 48 + (state.score * 7) % 52) % canvas.height;
+        ctx.fillStyle = "#ff4da6";
+        heartPath(x + 60, y + 34, 10 + (i%3)*2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    function drawPipes(){
+      for(const p of game.pipes){
+        ctx.save();
+        ctx.fillStyle = "rgba(255,255,255,.78)";
+        ctx.strokeStyle = "rgba(25,10,20,.14)";
+        ctx.lineWidth = 1;
+
+        if(ctx.roundRect){
+          ctx.beginPath();
+          ctx.roundRect(p.x, 0, game.pipeW, p.gapTop, 14);
+          ctx.fill();
+          ctx.stroke();
+
+          const by = p.gapTop + p.gapH;
+          ctx.beginPath();
+          ctx.roundRect(p.x, by, game.pipeW, canvas.height - by, 14);
+          ctx.fill();
+          ctx.stroke();
+        }else{
+          ctx.fillRect(p.x, 0, game.pipeW, p.gapTop);
+          ctx.strokeRect(p.x, 0, game.pipeW, p.gapTop);
+
+          const by = p.gapTop + p.gapH;
+          ctx.fillRect(p.x, by, game.pipeW, canvas.height - by);
+          ctx.strokeRect(p.x, by, game.pipeW, canvas.height - by);
+        }
+
+        ctx.restore();
+      }
+    }
+
+    function drawBird(){
+      const img = (state.player === "adam") ? imgAdam : imgSophia;
+
+      ctx.save();
+      ctx.fillStyle = "rgba(255,255,255,.80)";
+      ctx.strokeStyle = "rgba(25,10,20,.14)";
+      ctx.lineWidth = 1;
+
+      ctx.beginPath();
+      ctx.arc(game.bird.x, game.bird.y, game.bird.r + 6, 0, Math.PI*2);
+      ctx.closePath();
       ctx.fill();
       ctx.stroke();
 
-      const by = p.gapTop + p.gapH;
       ctx.beginPath();
-      ctx.roundRect(p.x, by, game.pipeW, canvas.height - by, 14);
-      ctx.fill();
-      ctx.stroke();
-    }else{
-      ctx.fillRect(p.x, 0, game.pipeW, p.gapTop);
-      ctx.strokeRect(p.x, 0, game.pipeW, p.gapTop);
+      ctx.arc(game.bird.x, game.bird.y, game.bird.r + 2, 0, Math.PI*2);
+      ctx.closePath();
+      ctx.clip();
 
-      const by = p.gapTop + p.gapH;
-      ctx.fillRect(p.x, by, game.pipeW, canvas.height - by);
-      ctx.strokeRect(p.x, by, game.pipeW, canvas.height - by);
+      if(img.complete && img.naturalWidth > 0){
+        const s = (game.bird.r + 6) * 2.2;
+        ctx.drawImage(img, game.bird.x - s/2, game.bird.y - s/2, s, s);
+      }else{
+        ctx.fillStyle = "rgba(25,10,20,.55)";
+        ctx.font = "900 18px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+        ctx.textAlign = "center";
+        ctx.fillText(state.player === "adam" ? "A" : "S", game.bird.x, game.bird.y + 6);
+      }
+
+      ctx.restore();
     }
 
-    ctx.restore();
-  }
-}
+    function draw(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
 
-function drawBird(){
-  const img = (state.player === "adam") ? imgAdam : imgSophia;
+      ctx.save();
+      const g = ctx.createLinearGradient(0,0,canvas.width,canvas.height);
+      g.addColorStop(0, "rgba(255,255,255,.78)");
+      g.addColorStop(1, "rgba(255,255,255,.60)");
+      ctx.fillStyle = g;
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.restore();
 
-  ctx.save();
-  ctx.fillStyle = "rgba(255,255,255,.80)";
-  ctx.strokeStyle = "rgba(25,10,20,.14)";
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.arc(game.bird.x, game.bird.y, game.bird.r + 6, 0, Math.PI*2);
-  ctx.closePath();
-  ctx.fill();
-  ctx.stroke();
+      drawSoftHearts();
+      drawPipes();
+      drawBird();
 
-  ctx.beginPath();
-  ctx.arc(game.bird.x, game.bird.y, game.bird.r + 2, 0, Math.PI*2);
-  ctx.closePath();
-  ctx.clip();
+      ctx.save();
+      ctx.fillStyle = "rgba(25,10,20,.70)";
 
-  if(img.complete && img.naturalWidth > 0){
-    const s = (game.bird.r + 6) * 2.2;
-    ctx.drawImage(img, game.bird.x - s/2, game.bird.y - s/2, s, s);
-  }else{
-    ctx.fillStyle = "rgba(25,10,20,.55)";
-    ctx.font = "900 18px system-ui, -apple-system, Segoe UI, Roboto, Arial";
-    ctx.textAlign = "center";
-    ctx.fillText(state.player === "adam" ? "A" : "S", game.bird.x, game.bird.y + 6);
-  }
+      if(!state.started && !state.gameOver){
+        ctx.textAlign = "center";
+        ctx.font = "900 26px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+        ctx.fillText("Tap to start", canvas.width/2, canvas.height/2 - 14);
+        ctx.font = "800 16px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+        ctx.fillText("Then keep tapping to stay up", canvas.width/2, canvas.height/2 + 14);
+      }
 
-  ctx.restore();
-}
+      if(paused){
+        ctx.textAlign = "center";
+        ctx.font = "900 40px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+        ctx.fillText("Paused", canvas.width/2, canvas.height/2);
+      }
 
-function draw(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+      if(state.gameOver){
+        ctx.textAlign = "center";
+        ctx.font = "900 40px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+        ctx.fillText("Game over", canvas.width/2, canvas.height/2 - 10);
+        ctx.font = "900 18px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+        ctx.fillText("Press Restart or tap", canvas.width/2, canvas.height/2 + 22);
+      }
 
-  ctx.save();
-  const g = ctx.createLinearGradient(0,0,canvas.width,canvas.height);
-  g.addColorStop(0, "rgba(255,255,255,.78)");
-  g.addColorStop(1, "rgba(255,255,255,.60)");
-  ctx.fillStyle = g;
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-  ctx.restore();
-
-  drawSoftHearts();
-  drawPipes();
-  drawBird();
-
-  ctx.save();
-  ctx.fillStyle = "rgba(25,10,20,.70)";
-
-  if(!state.started && !state.gameOver){
-    ctx.textAlign = "center";
-    ctx.font = "900 26px system-ui, -apple-system, Segoe UI, Roboto, Arial";
-    ctx.fillText("Tap to start", canvas.width/2, canvas.height/2 - 14);
-    ctx.font = "800 16px system-ui, -apple-system, Segoe UI, Roboto, Arial";
-    ctx.fillText("Then keep tapping to stay up", canvas.width/2, canvas.height/2 + 14);
-  }
-
-  if(paused){
-    ctx.textAlign = "center";
-    ctx.font = "900 40px system-ui, -apple-system, Segoe UI, Roboto, Arial";
-    ctx.fillText("Paused", canvas.width/2, canvas.height/2);
-  }
-
-  if(state.gameOver){
-    ctx.textAlign = "center";
-    ctx.font = "900 40px system-ui, -apple-system, Segoe UI, Roboto, Arial";
-    ctx.fillText("Game over", canvas.width/2, canvas.height/2 - 10);
-    ctx.font = "900 18px system-ui, -apple-system, Segoe UI, Roboto, Arial";
-    ctx.fillText("Press Restart or tap", canvas.width/2, canvas.height/2 + 22);
-  }
-
-  ctx.restore();
-}
-
-function loop(t){
-  if(!running) return;
-  if(!state.lastT) state.lastT = t;
-  const dt = Math.min(0.033, (t - state.lastT) / 1000);
-  state.lastT = t;
-
-  update(dt);
-  draw();
-
-  rafId = requestAnimationFrame(loop);
-}
-
-// Keyboard: space flaps, P pauses
-window.addEventListener("keydown", (e) => {
-  if(e.key === " "){
-    if(state.gameOver){
-      resetFlappy();
-      state.started = true;
+      ctx.restore();
     }
-    flap();
-    e.preventDefault();
-  }
-  if(e.key === "p" || e.key === "P"){
-    paused = !paused;
-    $("pauseBtn").textContent = paused ? "Resume" : "Pause";
-    e.preventDefault();
-  }
-}, { passive:false });
 
-// Tap or click flaps
-canvas.addEventListener("pointerdown", (e) => {
-  if(!running) return;
-  canvas.setPointerCapture(e.pointerId);
-  if(state.gameOver){
-    resetFlappy();
-    state.started = true;
-  }
-  flap();
-});
+    function loop(t){
+      if(!running) return;
+      if(!state.lastT) state.lastT = t;
+      const dt = Math.min(0.033, (t - state.lastT) / 1000);
+      state.lastT = t;
 
-  
+      update(dt);
+      draw();
+
+      rafId = requestAnimationFrame(loop);
+    }
+
+    window.addEventListener("keydown", (e) => {
+      if(e.key === " "){
+        if(state.gameOver){
+          resetFlappy();
+          state.started = true;
+        }
+        flap();
+        e.preventDefault();
+      }
+      if(e.key === "p" || e.key === "P"){
+        paused = !paused;
+        $("pauseBtn").textContent = paused ? "Resume" : "Pause";
+        e.preventDefault();
+      }
+    }, { passive:false });
+
+    canvas.addEventListener("pointerdown", (e) => {
+      if(!running) return;
+      canvas.setPointerCapture(e.pointerId);
+      if(state.gameOver){
+        resetFlappy();
+        state.started = true;
+      }
+      flap();
+    });
+
+    function init(){
       $("today").textContent = fmtToday();
       $("footYear").textContent = "© " + new Date().getFullYear();
 
       wireTiles();
 
-      // Future
       updateFuture();
       $("setNextDate").addEventListener("click", () => {
         const raw = $("nextDateInput").value.trim();
@@ -1068,29 +1027,26 @@ canvas.addEventListener("pointerdown", (e) => {
       });
       setInterval(updateFuture, 60 * 1000);
 
-// Game buttons
-$("pickAdam").addEventListener("click", () => startFlappy("adam"));
-$("pickSophia").addEventListener("click", () => startFlappy("sophia"));
+      $("pickAdam").addEventListener("click", () => startFlappy("adam"));
+      $("pickSophia").addEventListener("click", () => startFlappy("sophia"));
 
-$("pauseBtn").addEventListener("click", () => {
-  paused = !paused;
-  $("pauseBtn").textContent = paused ? "Resume" : "Pause";
-});
+      $("pauseBtn").addEventListener("click", () => {
+        paused = !paused;
+        $("pauseBtn").textContent = paused ? "Resume" : "Pause";
+      });
 
-$("restartBtn").addEventListener("click", () => {
-  resetFlappy();
-  state.started = true;
-  flap();
-});
+      $("restartBtn").addEventListener("click", () => {
+        resetFlappy();
+        state.started = true;
+        flap();
+      });
 
-$("changePlayerBtn").addEventListener("click", () => {
-  stopFlappy();
-});
-
-    
+      $("changePlayerBtn").addEventListener("click", () => {
+        stopFlappy();
+      });
     }
+
     init();
   </script>
 </body>
 </html>
-
