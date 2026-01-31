@@ -471,9 +471,20 @@
         </p>
       </section>
 
+
+
+
+
+
+
+
+
+
+
+      
       <section id="gameView" class="card view" aria-label="Game view">
         <div class="row">
-          <h2>Ping Pong</h2>
+          <h2>Flappy Love</h2>
           <button class="btn" data-back>Back</button>
         </div>
 
@@ -487,30 +498,33 @@
             <div class="chooser">
               <button class="btn btnPrimary" id="pickAdam" type="button">Play as Adam</button>
               <button class="btn btnPrimary" id="pickSophia" type="button">Play as Sophia</button>
-              <span class="pill">W/S or Arrow keys, or drag on phone</span>
+              <span class="pill">Tap, click, or press Space to flap</span>
             </div>
           </div>
 
-          <div id="pongScreen" class="hidden">
+          <div id="flappyScreen" class="hidden">
             <div class="controls">
               <div class="chooser">
                 <span class="pill">Score: <b id="score">0</b></span>
                 <span class="pill">Best: <b id="best">0</b></span>
+                <span class="pill" id="difficultyPill">Easy</span>
               </div>
               <div class="chooser">
                 <button class="btn" id="pauseBtn" type="button">Pause</button>
                 <button class="btn" id="restartBtn" type="button">Restart</button>
+                <button class="btn" id="changePlayerBtn" type="button">Change player</button>
               </div>
             </div>
 
-            <canvas id="pong" width="900" height="520" aria-label="Pong game canvas"></canvas>
+            <canvas id="flappy" width="900" height="520" aria-label="Flappy game canvas"></canvas>
 
             <p class="hint">
-              If faces do not show, double check the filenames and that they are inside the assets folder.
+              Tip: tap the canvas to flap. If faces do not show, double check filenames in the assets folder.
             </p>
           </div>
         </div>
       </section>
+
 
       <section id="infoView" class="card view" aria-label="Info view">
         <div class="row">
@@ -617,7 +631,7 @@
 
       document.querySelectorAll("[data-back]").forEach(btn => {
         btn.addEventListener("click", () => {
-          stopPong();
+          stopFloppy();
           showHome();
         });
       });
@@ -647,339 +661,394 @@
       $("daysLeft").textContent = String(Math.max(0, left));
     }
 
-    // Pong game
-    const canvas = $("pong");
-    const ctx = canvas.getContext("2d");
+    // Flappy game
+const canvas = $("flappy");
+const ctx = canvas.getContext("2d");
 
-    const imgAdam = new Image();
-    const imgSophia = new Image();
-    imgAdam.src = "assets/adam.png";
-    imgSophia.src = "assets/sophia.png";
+const imgAdam = new Image();
+const imgSophia = new Image();
+imgAdam.src = "assets/adam.png";
+imgSophia.src = "assets/sophia.png";
 
-    let running = false;
-    let paused = false;
-    let rafId = 0;
+let running = false;
+let paused = false;
+let rafId = 0;
 
-    const state = {
-      player: "adam",
-      score: 0,
-      best: 0,
-      keys: { up:false, down:false }
-    };
+const BEST_KEY = "pookie_flappy_best_v1";
 
-    const game = {
-      w: canvas.width,
-      h: canvas.height,
-      paddleW: 18,
-      paddleH: 90,
-      ballR: 10,
-      player: { x: 40, y: 0, vy: 0, speed: 520 },
-      ai: { x: 0, y: 0, speed: 420 },
-      ball: { x: 0, y: 0, vx: 0, vy: 0, speed: 520 }
-    };
+const state = {
+  player: "adam",
+  score: 0,
+  best: 0,
+  started: false,
+  gameOver: false,
+  lastT: 0,
+  elapsed: 0
+};
 
-    function resetRound(){
-      game.w = canvas.width;
-      game.h = canvas.height;
+function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
 
-      game.player.y = (game.h - game.paddleH) / 2;
-      game.ai.x = game.w - 40 - game.paddleW;
-      game.ai.y = (game.h - game.paddleH) / 2;
+function loadBest(){
+  const raw = localStorage.getItem(BEST_KEY);
+  const n = raw ? parseInt(raw, 10) : 0;
+  state.best = Number.isFinite(n) ? n : 0;
+  $("best").textContent = String(state.best);
+}
+function saveBest(){
+  localStorage.setItem(BEST_KEY, String(state.best));
+}
 
-      game.ball.x = game.w / 2;
-      game.ball.y = game.h / 2;
+const game = {
+  bird: { x: 230, y: 260, vy: 0, r: 22 },
 
-      const dir = Math.random() < 0.5 ? -1 : 1;
-      game.ball.vx = dir * (game.ball.speed * 0.78);
-      game.ball.vy = (Math.random() * 2 - 1) * (game.ball.speed * 0.55);
-    }
+  gravity: 1500,
+  flap: -520,
 
-    function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
+  pipeW: 74,
+  pipes: [],
+  spawnTimer: 0,
 
-    function drawSoftHearts(){
-      ctx.save();
-      ctx.globalAlpha = 0.22;
-      for(let i=0;i<16;i++){
-        const x = (i * 60 + (state.score * 13) % 60) % game.w;
-        const y = (i * 35 + (state.score * 9) % 40) % game.h;
-        ctx.fillStyle = "#ff4da6";
-        heartPath(x + 80, y + 40, 10 + (i%3)*2);
-        ctx.fill();
-      }
-      ctx.restore();
-    }
+  base: { speed: 255, gap: 190, interval: 1.55 },
+  cur:  { speed: 255, gap: 190, interval: 1.55 }
+};
 
-    function heartPath(cx, cy, s){
-      ctx.beginPath();
-      ctx.moveTo(cx, cy + s * 0.6);
-      ctx.bezierCurveTo(cx - s, cy - s * 0.2, cx - s * 1.4, cy + s * 1.2, cx, cy + s * 1.8);
-      ctx.bezierCurveTo(cx + s * 1.4, cy + s * 1.2, cx + s, cy - s * 0.2, cx, cy + s * 0.6);
-      ctx.closePath();
-    }
+function difficultyLabel(){
+  if(state.elapsed < 18) return "Easy";
+  if(state.elapsed < 40) return "Medium";
+  if(state.elapsed < 70) return "Hard";
+  return "Chaos";
+}
 
-    function drawPaddleWithFace(x,y,isPlayer){
-      ctx.save();
-      ctx.fillStyle = "rgba(255,255,255,.75)";
-      ctx.strokeStyle = "rgba(25,10,20,.14)";
-      ctx.lineWidth = 1;
-      roundRect(x, y, game.paddleW, game.paddleH, 12);
-      ctx.fill();
-      ctx.stroke();
+function resetFlappy(){
+  state.score = 0;
+  $("score").textContent = "0";
+  $("difficultyPill").textContent = "Easy";
 
-      const img = isPlayer
-        ? (state.player === "adam" ? imgAdam : imgSophia)
-        : (state.player === "adam" ? imgSophia : imgAdam);
+  state.started = false;
+  state.gameOver = false;
+  state.elapsed = 0;
 
-      const pad = 6;
-      const size = game.paddleW + 40;
-      const ix = x + (game.paddleW/2) - (size/2);
-      const iy = y + (game.paddleH/2) - (size/2);
+  game.bird.x = 230;
+  game.bird.y = canvas.height * 0.5;
+  game.bird.vy = 0;
 
-      if(img.complete && img.naturalWidth > 0){
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(x + game.paddleW/2, y + game.paddleH/2, Math.min(38, game.paddleH/2 - 6), 0, Math.PI*2);
-        ctx.closePath();
-        ctx.clip();
-        ctx.drawImage(img, ix, iy, size, size);
-        ctx.restore();
-      }else{
-        ctx.fillStyle = "rgba(25,10,20,.55)";
-        ctx.font = "700 14px system-ui, -apple-system, Segoe UI, Roboto, Arial";
-        ctx.textAlign = "center";
-        ctx.fillText(isPlayer ? (state.player === "adam" ? "A" : "S") : (state.player === "adam" ? "S" : "A"),
-          x + game.paddleW/2, y + game.paddleH/2 + 5);
-      }
+  game.pipes = [];
+  game.spawnTimer = 0;
 
-      ctx.restore();
-    }
+  game.cur.speed = game.base.speed;
+  game.cur.gap = game.base.gap;
+  game.cur.interval = game.base.interval;
 
-    function roundRect(x,y,w,h,r){
-      const rr = Math.min(r, w/2, h/2);
-      ctx.beginPath();
-      ctx.moveTo(x+rr, y);
-      ctx.arcTo(x+w, y, x+w, y+h, rr);
-      ctx.arcTo(x+w, y+h, x, y+h, rr);
-      ctx.arcTo(x, y+h, x, y, rr);
-      ctx.arcTo(x, y, x+w, y, rr);
-      ctx.closePath();
-    }
+  paused = false;
+  $("pauseBtn").textContent = "Pause";
+}
 
-    function drawBall(){
-      ctx.save();
-      ctx.fillStyle = "rgba(255,77,166,.95)";
-      ctx.strokeStyle = "rgba(25,10,20,.14)";
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.arc(game.ball.x, game.ball.y, game.ballR, 0, Math.PI*2);
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-      ctx.restore();
-    }
+function startFlappy(player){
+  state.player = player;
 
-    function drawCenterLine(){
-      ctx.save();
-      ctx.globalAlpha = 0.35;
-      ctx.strokeStyle = "rgba(25,10,20,.22)";
-      ctx.lineWidth = 3;
-      ctx.setLineDash([10, 14]);
-      ctx.beginPath();
-      ctx.moveTo(game.w/2, 20);
-      ctx.lineTo(game.w/2, game.h - 20);
-      ctx.stroke();
-      ctx.restore();
-    }
+  $("pickScreen").classList.add("hidden");
+  $("flappyScreen").classList.remove("hidden");
 
-    function update(dt){
-      // Player input
-      let dy = 0;
-      if(state.keys.up) dy -= 1;
-      if(state.keys.down) dy += 1;
-      game.player.y += dy * game.player.speed * dt;
-      game.player.y = clamp(game.player.y, 10, game.h - game.paddleH - 10);
+  loadBest();
+  resetFlappy();
 
-      // Touch control uses targetY if set
-      if(touchTargetY !== null){
-        const want = touchTargetY - game.paddleH/2;
-        const diff = want - game.player.y;
-        game.player.y += clamp(diff, -game.player.speed*dt, game.player.speed*dt);
-        game.player.y = clamp(game.player.y, 10, game.h - game.paddleH - 10);
-      }
+  running = true;
+  state.lastT = 0;
+  cancelAnimationFrame(rafId);
+  rafId = requestAnimationFrame(loop);
+}
 
-      // AI follows ball with some smoothing
-      const aiCenter = game.ai.y + game.paddleH/2;
-      const diff = game.ball.y - aiCenter;
-      game.ai.y += clamp(diff, -game.ai.speed*dt, game.ai.speed*dt);
-      game.ai.y = clamp(game.ai.y, 10, game.h - game.paddleH - 10);
+function stopFlappy(){
+  running = false;
+  paused = false;
+  cancelAnimationFrame(rafId);
 
-      // Move ball
-      game.ball.x += game.ball.vx * dt;
-      game.ball.y += game.ball.vy * dt;
+  $("flappyScreen").classList.add("hidden");
+  $("pickScreen").classList.remove("hidden");
+}
 
-      // Bounce top/bottom
-      if(game.ball.y - game.ballR <= 10){
-        game.ball.y = 10 + game.ballR;
-        game.ball.vy *= -1;
-      }
-      if(game.ball.y + game.ballR >= game.h - 10){
-        game.ball.y = game.h - 10 - game.ballR;
-        game.ball.vy *= -1;
-      }
+function flap(){
+  if(!running) return;
+  if(state.gameOver) return;
 
-      // Paddle collisions
-      const p = { x: game.player.x, y: game.player.y, w: game.paddleW, h: game.paddleH };
-      const a = { x: game.ai.x, y: game.ai.y, w: game.paddleW, h: game.paddleH };
+  if(!state.started){
+    state.started = true;
+    game.bird.vy = game.flap * 0.75;
+    return;
+  }
+  game.bird.vy = game.flap;
+}
 
-      // Player paddle
-      if(circleRectHit(game.ball.x, game.ball.y, game.ballR, p.x, p.y, p.w, p.h) && game.ball.vx < 0){
-        game.ball.x = p.x + p.w + game.ballR + 0.5;
-        const rel = (game.ball.y - (p.y + p.h/2)) / (p.h/2);
-        const ang = rel * 0.9;
-        const speed = Math.min(900, Math.hypot(game.ball.vx, game.ball.vy) * 1.03);
-        game.ball.vx = Math.cos(ang) * speed;
-        game.ball.vy = Math.sin(ang) * speed;
-        state.score += 1;
-        $("score").textContent = String(state.score);
-        state.best = Math.max(state.best, state.score);
+function circleRectHit(cx, cy, cr, rx, ry, rw, rh){
+  const closestX = clamp(cx, rx, rx + rw);
+  const closestY = clamp(cy, ry, ry + rh);
+  const dx = cx - closestX;
+  const dy = cy - closestY;
+  return (dx*dx + dy*dy) <= cr*cr;
+}
+
+function spawnPipe(){
+  const topMargin = 70;
+  const bottomMargin = 70;
+  const gap = game.cur.gap;
+
+  const usable = canvas.height - topMargin - bottomMargin - gap;
+  const gapTop = topMargin + Math.random() * Math.max(10, usable);
+
+  game.pipes.push({
+    x: canvas.width + 40,
+    gapTop,
+    gapH: gap,
+    passed: false
+  });
+}
+
+function rampDifficulty(){
+  const t = state.elapsed;
+
+  const speed = game.base.speed + t * 2.35;
+  const gap = game.base.gap - t * 0.85;
+  const interval = game.base.interval - t * 0.006;
+
+  game.cur.speed = clamp(speed, game.base.speed, 520);
+  game.cur.gap = clamp(gap, 118, game.base.gap);
+  game.cur.interval = clamp(interval, 0.92, game.base.interval);
+
+  $("difficultyPill").textContent = difficultyLabel();
+}
+
+function update(dt){
+  if(paused) return;
+  if(state.gameOver) return;
+
+  if(!state.started){
+    game.bird.vy = 0;
+    game.bird.y += Math.sin(performance.now() / 240) * 0.35;
+    game.bird.y = clamp(game.bird.y, 70, canvas.height - 70);
+    return;
+  }
+
+  state.elapsed += dt;
+  rampDifficulty();
+
+  game.bird.vy += game.gravity * dt;
+  game.bird.y += game.bird.vy * dt;
+
+  game.spawnTimer += dt;
+  if(game.spawnTimer >= game.cur.interval){
+    game.spawnTimer = 0;
+    spawnPipe();
+  }
+
+  for(const p of game.pipes){
+    p.x -= game.cur.speed * dt;
+
+    if(!p.passed && p.x + game.pipeW < game.bird.x - game.bird.r){
+      p.passed = true;
+      state.score += 1;
+      $("score").textContent = String(state.score);
+      if(state.score > state.best){
+        state.best = state.score;
         $("best").textContent = String(state.best);
-      }
-
-      // AI paddle
-      if(circleRectHit(game.ball.x, game.ball.y, game.ballR, a.x, a.y, a.w, a.h) && game.ball.vx > 0){
-        game.ball.x = a.x - game.ballR - 0.5;
-        const rel = (game.ball.y - (a.y + a.h/2)) / (a.h/2);
-        const ang = Math.PI - (rel * 0.9);
-        const speed = Math.min(900, Math.hypot(game.ball.vx, game.ball.vy) * 1.02);
-        game.ball.vx = Math.cos(ang) * speed;
-        game.ball.vy = Math.sin(ang) * speed;
-      }
-
-      // Out of bounds
-      if(game.ball.x < -40 || game.ball.x > game.w + 40){
-        state.score = 0;
-        $("score").textContent = "0";
-        resetRound();
+        saveBest();
       }
     }
+  }
 
-    function circleRectHit(cx,cy,cr, rx,ry,rw,rh){
-      const closestX = clamp(cx, rx, rx + rw);
-      const closestY = clamp(cy, ry, ry + rh);
-      const dx = cx - closestX;
-      const dy = cy - closestY;
-      return (dx*dx + dy*dy) <= cr*cr;
+  game.pipes = game.pipes.filter(p => p.x > -game.pipeW - 80);
+
+  const ceiling = 50;
+  const floor = canvas.height - 50;
+  if(game.bird.y - game.bird.r <= ceiling){
+    game.bird.y = ceiling + game.bird.r;
+    game.bird.vy = 0;
+  }
+  if(game.bird.y + game.bird.r >= floor){
+    state.gameOver = true;
+  }
+
+  for(const p of game.pipes){
+    const topRect = { x: p.x, y: 0, w: game.pipeW, h: p.gapTop };
+    const botRect = { x: p.x, y: p.gapTop + p.gapH, w: game.pipeW, h: canvas.height - (p.gapTop + p.gapH) };
+
+    if(
+      circleRectHit(game.bird.x, game.bird.y, game.bird.r, topRect.x, topRect.y, topRect.w, topRect.h) ||
+      circleRectHit(game.bird.x, game.bird.y, game.bird.r, botRect.x, botRect.y, botRect.w, botRect.h)
+    ){
+      state.gameOver = true;
+      break;
+    }
+  }
+}
+
+function heartPath(cx, cy, s){
+  ctx.beginPath();
+  ctx.moveTo(cx, cy + s * 0.6);
+  ctx.bezierCurveTo(cx - s, cy - s * 0.2, cx - s * 1.4, cy + s * 1.2, cx, cy + s * 1.8);
+  ctx.bezierCurveTo(cx + s * 1.4, cy + s * 1.2, cx + s, cy - s * 0.2, cx, cy + s * 0.6);
+  ctx.closePath();
+}
+
+function drawSoftHearts(){
+  ctx.save();
+  ctx.globalAlpha = 0.18;
+  for(let i=0;i<14;i++){
+    const x = (i * 75 + (state.score * 11) % 75) % canvas.width;
+    const y = (i * 48 + (state.score * 7) % 52) % canvas.height;
+    ctx.fillStyle = "#ff4da6";
+    heartPath(x + 60, y + 34, 10 + (i%3)*2);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawPipes(){
+  for(const p of game.pipes){
+    ctx.save();
+    ctx.fillStyle = "rgba(255,255,255,.78)";
+    ctx.strokeStyle = "rgba(25,10,20,.14)";
+    ctx.lineWidth = 1;
+
+    // Using roundRect if available
+    if(ctx.roundRect){
+      ctx.beginPath();
+      ctx.roundRect(p.x, 0, game.pipeW, p.gapTop, 14);
+      ctx.fill();
+      ctx.stroke();
+
+      const by = p.gapTop + p.gapH;
+      ctx.beginPath();
+      ctx.roundRect(p.x, by, game.pipeW, canvas.height - by, 14);
+      ctx.fill();
+      ctx.stroke();
+    }else{
+      ctx.fillRect(p.x, 0, game.pipeW, p.gapTop);
+      ctx.strokeRect(p.x, 0, game.pipeW, p.gapTop);
+
+      const by = p.gapTop + p.gapH;
+      ctx.fillRect(p.x, by, game.pipeW, canvas.height - by);
+      ctx.strokeRect(p.x, by, game.pipeW, canvas.height - by);
     }
 
-    function draw(){
-      ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.restore();
+  }
+}
 
-      // Soft background inside the canvas
-      ctx.save();
-      const g = ctx.createLinearGradient(0,0,canvas.width,canvas.height);
-      g.addColorStop(0, "rgba(255,255,255,.78)");
-      g.addColorStop(1, "rgba(255,255,255,.62)");
-      ctx.fillStyle = g;
-      ctx.fillRect(0,0,canvas.width,canvas.height);
-      ctx.restore();
+function drawBird(){
+  const img = (state.player === "adam") ? imgAdam : imgSophia;
 
-      drawSoftHearts();
-      drawCenterLine();
+  ctx.save();
+  ctx.fillStyle = "rgba(255,255,255,.80)";
+  ctx.strokeStyle = "rgba(25,10,20,.14)";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.arc(game.bird.x, game.bird.y, game.bird.r + 6, 0, Math.PI*2);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
 
-      game.player.x = 40;
-      game.ai.x = canvas.width - 40 - game.paddleW;
+  ctx.beginPath();
+  ctx.arc(game.bird.x, game.bird.y, game.bird.r + 2, 0, Math.PI*2);
+  ctx.closePath();
+  ctx.clip();
 
-      drawPaddleWithFace(game.player.x, game.player.y, true);
-      drawPaddleWithFace(game.ai.x, game.ai.y, false);
-      drawBall();
+  if(img.complete && img.naturalWidth > 0){
+    const s = (game.bird.r + 6) * 2.2;
+    ctx.drawImage(img, game.bird.x - s/2, game.bird.y - s/2, s, s);
+  }else{
+    ctx.fillStyle = "rgba(25,10,20,.55)";
+    ctx.font = "900 18px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+    ctx.textAlign = "center";
+    ctx.fillText(state.player === "adam" ? "A" : "S", game.bird.x, game.bird.y + 6);
+  }
 
-      if(paused){
-        ctx.save();
-        ctx.fillStyle = "rgba(25,10,20,.70)";
-        ctx.font = "900 40px system-ui, -apple-system, Segoe UI, Roboto, Arial";
-        ctx.textAlign = "center";
-        ctx.fillText("Paused", canvas.width/2, canvas.height/2);
-        ctx.restore();
-      }
+  ctx.restore();
+}
+
+function draw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  ctx.save();
+  const g = ctx.createLinearGradient(0,0,canvas.width,canvas.height);
+  g.addColorStop(0, "rgba(255,255,255,.78)");
+  g.addColorStop(1, "rgba(255,255,255,.60)");
+  ctx.fillStyle = g;
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.restore();
+
+  drawSoftHearts();
+  drawPipes();
+  drawBird();
+
+  ctx.save();
+  ctx.fillStyle = "rgba(25,10,20,.70)";
+
+  if(!state.started && !state.gameOver){
+    ctx.textAlign = "center";
+    ctx.font = "900 26px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+    ctx.fillText("Tap to start", canvas.width/2, canvas.height/2 - 14);
+    ctx.font = "800 16px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+    ctx.fillText("Then keep tapping to stay up", canvas.width/2, canvas.height/2 + 14);
+  }
+
+  if(paused){
+    ctx.textAlign = "center";
+    ctx.font = "900 40px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+    ctx.fillText("Paused", canvas.width/2, canvas.height/2);
+  }
+
+  if(state.gameOver){
+    ctx.textAlign = "center";
+    ctx.font = "900 40px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+    ctx.fillText("Game over", canvas.width/2, canvas.height/2 - 10);
+    ctx.font = "900 18px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+    ctx.fillText("Press Restart or tap", canvas.width/2, canvas.height/2 + 22);
+  }
+
+  ctx.restore();
+}
+
+function loop(t){
+  if(!running) return;
+  if(!state.lastT) state.lastT = t;
+  const dt = Math.min(0.033, (t - state.lastT) / 1000);
+  state.lastT = t;
+
+  update(dt);
+  draw();
+
+  rafId = requestAnimationFrame(loop);
+}
+
+// Keyboard: space flaps, P pauses
+window.addEventListener("keydown", (e) => {
+  if(e.key === " "){
+    if(state.gameOver){
+      resetFlappy();
+      state.started = true;
     }
+    flap();
+    e.preventDefault();
+  }
+  if(e.key === "p" || e.key === "P"){
+    paused = !paused;
+    $("pauseBtn").textContent = paused ? "Resume" : "Pause";
+    e.preventDefault();
+  }
+}, { passive:false });
 
-    let lastT = 0;
-    function loop(t){
-      if(!running){ return; }
-      if(!lastT) lastT = t;
-      const dt = Math.min(0.033, (t - lastT) / 1000);
-      lastT = t;
+// Tap or click flaps
+canvas.addEventListener("pointerdown", (e) => {
+  if(!running) return;
+  canvas.setPointerCapture(e.pointerId);
+  if(state.gameOver){
+    resetFlappy();
+    state.started = true;
+  }
+  flap();
+});
 
-      if(!paused){
-        update(dt);
-      }
-      draw();
-      rafId = requestAnimationFrame(loop);
-    }
-
-    function startPong(player){
-      state.player = player;
-      $("pickScreen").classList.add("hidden");
-      $("pongScreen").classList.remove("hidden");
-
-      state.score = 0;
-      $("score").textContent = "0";
-
-      resetRound();
-      paused = false;
-      $("pauseBtn").textContent = "Pause";
-
-      running = true;
-      lastT = 0;
-      cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(loop);
-    }
-
-    function stopPong(){
-      running = false;
-      paused = false;
-      cancelAnimationFrame(rafId);
-      $("pongScreen").classList.add("hidden");
-      $("pickScreen").classList.remove("hidden");
-    }
-
-    // Keyboard controls
-    function onKey(e, down){
-      if(e.key === "w" || e.key === "W" || e.key === "ArrowUp"){
-        state.keys.up = down;
-        e.preventDefault();
-      }
-      if(e.key === "s" || e.key === "S" || e.key === "ArrowDown"){
-        state.keys.down = down;
-        e.preventDefault();
-      }
-      if(e.key === " " && down){
-        paused = !paused;
-        $("pauseBtn").textContent = paused ? "Resume" : "Pause";
-        e.preventDefault();
-      }
-    }
-    window.addEventListener("keydown", (e) => onKey(e,true), { passive:false });
-    window.addEventListener("keyup", (e) => onKey(e,false), { passive:false });
-
-    // Touch drag control
-    let touchTargetY = null;
-    function setTouchTarget(clientY){
-      const rect = canvas.getBoundingClientRect();
-      const y = (clientY - rect.top) * (canvas.height / rect.height);
-      touchTargetY = clamp(y, 10, canvas.height - 10);
-    }
-    canvas.addEventListener("pointerdown", (e) => {
-      canvas.setPointerCapture(e.pointerId);
-      setTouchTarget(e.clientY);
-    });
-    canvas.addEventListener("pointermove", (e) => {
-      if(e.buttons === 1) setTouchTarget(e.clientY);
-    });
-    canvas.addEventListener("pointerup", () => { touchTargetY = null; });
-    canvas.addEventListener("pointercancel", () => { touchTargetY = null; });
-
-    function init(){
+  
       $("today").textContent = fmtToday();
       $("footYear").textContent = "© " + new Date().getFullYear();
 
@@ -999,20 +1068,26 @@
       });
       setInterval(updateFuture, 60 * 1000);
 
-      // Game buttons
-      $("pickAdam").addEventListener("click", () => startPong("adam"));
-      $("pickSophia").addEventListener("click", () => startPong("sophia"));
+// Game buttons
+$("pickAdam").addEventListener("click", () => startFlappy("adam"));
+$("pickSophia").addEventListener("click", () => startFlappy("sophia"));
 
-      $("pauseBtn").addEventListener("click", () => {
-        paused = !paused;
-        $("pauseBtn").textContent = paused ? "Resume" : "Pause";
-      });
+$("pauseBtn").addEventListener("click", () => {
+  paused = !paused;
+  $("pauseBtn").textContent = paused ? "Resume" : "Pause";
+});
 
-      $("restartBtn").addEventListener("click", () => {
-        state.score = 0;
-        $("score").textContent = "0";
-        resetRound();
-      });
+$("restartBtn").addEventListener("click", () => {
+  resetFlappy();
+  state.started = true;
+  flap();
+});
+
+$("changePlayerBtn").addEventListener("click", () => {
+  stopFlappy();
+});
+
+    
     }
     init();
   </script>
