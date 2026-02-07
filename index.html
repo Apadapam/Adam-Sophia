@@ -865,45 +865,43 @@
     }
 
 // Obstacles / pipes drawing (make them clearly visible)
-function drawObstacle(obs) {
-  const x = obs.x;
-  const w = obs.w;
+function drawObstacle(p){
+  const x = p.x;
+  const w = game.pipeW;
 
-  // top pipe
-  const topH = obs.gapY;
-  // bottom pipe
-  const bottomY = obs.gapY + obs.gapH;
+  const topH = p.gapTop;
+  const bottomY = p.gapTop + p.gapH;
   const bottomH = canvas.height - bottomY;
 
   ctx.save();
 
-  // stronger visibility
+  // shadow for contrast
   ctx.shadowColor = "rgba(0,0,0,0.18)";
   ctx.shadowBlur = 10;
   ctx.shadowOffsetY = 4;
 
-  // main fill
-  ctx.fillStyle = "#ff4da6"; // hot pink
-  ctx.strokeStyle = "#ffffff"; // white outline
+  // hot pink pipes + white outline
+  ctx.fillStyle = "#ff4da6";
+  ctx.strokeStyle = "rgba(255,255,255,0.95)";
   ctx.lineWidth = 3;
 
-  // draw top
+  // top
   ctx.beginPath();
   ctx.rect(x, 0, w, topH);
   ctx.fill();
   ctx.stroke();
 
-  // draw bottom
+  // bottom
   ctx.beginPath();
   ctx.rect(x, bottomY, w, bottomH);
   ctx.fill();
   ctx.stroke();
 
-  // optional: add a lighter inner highlight stripe
+  // highlight stripe
   ctx.shadowColor = "transparent";
   ctx.fillStyle = "rgba(255,255,255,0.22)";
-  ctx.fillRect(x + 6, 0, 8, topH);
-  ctx.fillRect(x + 6, bottomY, 8, bottomH);
+  ctx.fillRect(x + 8, 0, 8, topH);
+  ctx.fillRect(x + 8, bottomY, 8, bottomH);
 
   ctx.restore();
 }
