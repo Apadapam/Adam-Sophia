@@ -906,6 +906,12 @@
       ctx.restore();
     }
 
+    function drawPipes(){
+      for(const p of game.pipes){
+        drawObstacle(p);
+      }
+    }
+
 
     function drawBird(){
       const img = (state.player === "adam") ? imgAdam : imgSophia;
