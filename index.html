@@ -864,36 +864,50 @@
       ctx.restore();
     }
 
-    function drawPipes(){
-      for(const p of game.pipes){
-        ctx.save();
-        ctx.fillStyle = "rgba(255,255,255,.78)";
-        ctx.strokeStyle = "rgba(25,10,20,.14)";
-        ctx.lineWidth = 1;
+// Obstacles / pipes drawing (make them clearly visible)
+function drawObstacle(obs) {
+  const x = obs.x;
+  const w = obs.w;
 
-        if(ctx.roundRect){
-          ctx.beginPath();
-          ctx.roundRect(p.x, 0, game.pipeW, p.gapTop, 14);
-          ctx.fill();
-          ctx.stroke();
+  // top pipe
+  const topH = obs.gapY;
+  // bottom pipe
+  const bottomY = obs.gapY + obs.gapH;
+  const bottomH = canvas.height - bottomY;
 
-          const by = p.gapTop + p.gapH;
-          ctx.beginPath();
-          ctx.roundRect(p.x, by, game.pipeW, canvas.height - by, 14);
-          ctx.fill();
-          ctx.stroke();
-        }else{
-          ctx.fillRect(p.x, 0, game.pipeW, p.gapTop);
-          ctx.strokeRect(p.x, 0, game.pipeW, p.gapTop);
+  ctx.save();
 
-          const by = p.gapTop + p.gapH;
-          ctx.fillRect(p.x, by, game.pipeW, canvas.height - by);
-          ctx.strokeRect(p.x, by, game.pipeW, canvas.height - by);
-        }
+  // stronger visibility
+  ctx.shadowColor = "rgba(0,0,0,0.18)";
+  ctx.shadowBlur = 10;
+  ctx.shadowOffsetY = 4;
 
-        ctx.restore();
-      }
-    }
+  // main fill
+  ctx.fillStyle = "#ff4da6"; // hot pink
+  ctx.strokeStyle = "#ffffff"; // white outline
+  ctx.lineWidth = 3;
+
+  // draw top
+  ctx.beginPath();
+  ctx.rect(x, 0, w, topH);
+  ctx.fill();
+  ctx.stroke();
+
+  // draw bottom
+  ctx.beginPath();
+  ctx.rect(x, bottomY, w, bottomH);
+  ctx.fill();
+  ctx.stroke();
+
+  // optional: add a lighter inner highlight stripe
+  ctx.shadowColor = "transparent";
+  ctx.fillStyle = "rgba(255,255,255,0.22)";
+  ctx.fillRect(x + 6, 0, 8, topH);
+  ctx.fillRect(x + 6, bottomY, 8, bottomH);
+
+  ctx.restore();
+}
+
 
     function drawBird(){
       const img = (state.player === "adam") ? imgAdam : imgSophia;
