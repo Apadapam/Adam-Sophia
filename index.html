@@ -211,19 +211,23 @@
     .moment{
       position:relative;
       display:grid;
-      grid-template-columns: 1fr;
-      gap:10px;
-      padding:12px 12px 12px 18px;
+      grid-template-columns: 140px 1fr;
+      gap:12px;
+      padding:12px;
       border:1px solid var(--line);
       border-radius: 16px;
       background: rgba(255,255,255,.70);
       box-shadow: 0 10px 20px rgba(20,0,10,.08);
+      align-items:start;
+    }
+    @media (max-width: 620px){
+      .moment{grid-template-columns:1fr}
     }
     .moment::before{
       content:"";
       position:absolute;
       left: -1px;
-      top: 16px;
+      top: 18px;
       width: 14px;
       height: 14px;
       border-radius: 999px;
@@ -231,6 +235,39 @@
       box-shadow: 0 0 0 4px rgba(255,77,166,.16);
       transform: translateX(-18px);
     }
+
+    .momentMedia{
+      border-radius: 14px;
+      border:1px dashed rgba(25,10,20,.18);
+      background: rgba(255,255,255,.75);
+      overflow:hidden;
+      min-height:110px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .momentMedia img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .momentPlaceholder{
+      font-weight:900;
+      color: rgba(25,10,20,.55);
+      font-size:13px;
+      text-align:center;
+      padding:10px;
+    }
+
+    .momentBody{
+      padding:4px 6px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-width:0;
+    }
+
     .momentTop{
       display:flex;
       gap:10px;
@@ -245,25 +282,50 @@
       background: rgba(255,255,255,.75);
       color: var(--muted);
       font-weight:800;
+      white-space:nowrap;
     }
     .momentTitle{margin:0; font-weight:900}
     .momentNote{margin:0; color:var(--muted)}
+
     .hint{
       font-size:13px;
       color: var(--muted);
       margin: 10px 0 0;
     }
 
-    .gameWrap{
-      display:grid;
-      gap:12px;
+    .storyScroller{
+      max-height: 72vh;
+      overflow:auto;
+      padding-right: 6px;
+      scroll-behavior:smooth;
+      -webkit-overflow-scrolling: touch;
     }
-    .chooser{
+    .storyScroller::-webkit-scrollbar{ width: 10px }
+    .storyScroller::-webkit-scrollbar-thumb{
+      background: rgba(25,10,20,.18);
+      border-radius: 999px;
+      border: 2px solid rgba(255,255,255,.6);
+    }
+
+    .storyQuick{
       display:flex;
       gap:10px;
       flex-wrap:wrap;
       align-items:center;
+      margin-bottom: 12px;
     }
+    .pillSmall{
+      font-size:12px;
+      padding:6px 10px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background: rgba(255,255,255,.7);
+      color: var(--muted);
+      font-weight:800;
+    }
+
+    .gameWrap{display:grid; gap:12px;}
+    .chooser{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
     .chooser .pill{
       font-size:12px;
       padding:6px 10px;
@@ -352,7 +414,7 @@
                 </div>
                 <div>
                   <p class="title">Our Story</p>
-                  <p class="desc">Little moments, with space for photos later.</p>
+                  <p class="desc">Little moments, with space for photos.</p>
                 </div>
               </div>
               <span class="badge">Click</span>
@@ -416,35 +478,157 @@
           <button class="btn" data-back>Back</button>
         </div>
 
-        <div class="panel timeline" id="storyTimeline">
-          <div class="moment">
-            <div class="momentTop">
-              <span class="dateTag">2026-01-01</span>
-              <p class="momentTitle">Our little start</p>
+        <div class="panel storyQuick" aria-label="Story quick help">
+          <span class="pillSmall">Add your photos into assets/story/</span>
+          <span class="pillSmall">Edit titles and notes in the HTML</span>
+          <span class="pillSmall">Scroll inside this card</span>
+        </div>
+
+        <div class="panel timeline storyScroller" id="storyTimeline">
+          <div class="moment" id="m1">
+            <div class="momentMedia">
+              <img src="assets/story/01.jpg" alt="" loading="lazy"
+                   onerror="this.remove(); this.parentElement.innerHTML='<div class=momentPlaceholder>Photo slot 1<br>assets/story/01.jpg</div>';">
             </div>
-            <p class="momentNote">Replace this with the real date and a short memory.</p>
+            <div class="momentBody">
+              <div class="momentTop">
+                <span class="dateTag">YYYY-MM-DD</span>
+                <p class="momentTitle">Moment 1 title</p>
+              </div>
+              <p class="momentNote">Your text here.</p>
+            </div>
           </div>
 
-          <div class="moment">
-            <div class="momentTop">
-              <span class="dateTag">2026-01-14</span>
-              <p class="momentTitle">First cozy day</p>
+          <div class="moment" id="m2">
+            <div class="momentMedia">
+              <img src="assets/story/02.jpg" alt="" loading="lazy"
+                   onerror="this.remove(); this.parentElement.innerHTML='<div class=momentPlaceholder>Photo slot 2<br>assets/story/02.jpg</div>';">
             </div>
-            <p class="momentNote">Add a sentence that makes her smile.</p>
+            <div class="momentBody">
+              <div class="momentTop">
+                <span class="dateTag">YYYY-MM-DD</span>
+                <p class="momentTitle">Moment 2 title</p>
+              </div>
+              <p class="momentNote">Your text here.</p>
+            </div>
           </div>
 
-          <div class="moment">
-            <div class="momentTop">
-              <span class="dateTag">2026-02-02</span>
-              <p class="momentTitle">A tiny tradition</p>
+          <div class="moment" id="m3">
+            <div class="momentMedia">
+              <img src="assets/story/03.jpg" alt="" loading="lazy"
+                   onerror="this.remove(); this.parentElement.innerHTML='<div class=momentPlaceholder>Photo slot 3<br>assets/story/03.jpg</div>';">
             </div>
-            <p class="momentNote">Example: favorite cafe, walk, movie night, anything.</p>
+            <div class="momentBody">
+              <div class="momentTop">
+                <span class="dateTag">YYYY-MM-DD</span>
+                <p class="momentTitle">Moment 3 title</p>
+              </div>
+              <p class="momentNote">Your text here.</p>
+            </div>
+          </div>
+
+          <div class="moment" id="m4">
+            <div class="momentMedia">
+              <img src="assets/story/04.jpg" alt="" loading="lazy"
+                   onerror="this.remove(); this.parentElement.innerHTML='<div class=momentPlaceholder>Photo slot 4<br>assets/story/04.jpg</div>';">
+            </div>
+            <div class="momentBody">
+              <div class="momentTop">
+                <span class="dateTag">YYYY-MM-DD</span>
+                <p class="momentTitle">Moment 4 title</p>
+              </div>
+              <p class="momentNote">Your text here.</p>
+            </div>
+          </div>
+
+          <div class="moment" id="m5">
+            <div class="momentMedia">
+              <img src="assets/story/05.jpg" alt="" loading="lazy"
+                   onerror="this.remove(); this.parentElement.innerHTML='<div class=momentPlaceholder>Photo slot 5<br>assets/story/05.jpg</div>';">
+            </div>
+            <div class="momentBody">
+              <div class="momentTop">
+                <span class="dateTag">YYYY-MM-DD</span>
+                <p class="momentTitle">Moment 5 title</p>
+              </div>
+              <p class="momentNote">Your text here.</p>
+            </div>
+          </div>
+
+          <div class="moment" id="m6">
+            <div class="momentMedia">
+              <img src="assets/story/06.jpg" alt="" loading="lazy"
+                   onerror="this.remove(); this.parentElement.innerHTML='<div class=momentPlaceholder>Photo slot 6<br>assets/story/06.jpg</div>';">
+            </div>
+            <div class="momentBody">
+              <div class="momentTop">
+                <span class="dateTag">YYYY-MM-DD</span>
+                <p class="momentTitle">Moment 6 title</p>
+              </div>
+              <p class="momentNote">Your text here.</p>
+            </div>
+          </div>
+
+          <div class="moment" id="m7">
+            <div class="momentMedia">
+              <img src="assets/story/07.jpg" alt="" loading="lazy"
+                   onerror="this.remove(); this.parentElement.innerHTML='<div class=momentPlaceholder>Photo slot 7<br>assets/story/07.jpg</div>';">
+            </div>
+            <div class="momentBody">
+              <div class="momentTop">
+                <span class="dateTag">YYYY-MM-DD</span>
+                <p class="momentTitle">Moment 7 title</p>
+              </div>
+              <p class="momentNote">Your text here.</p>
+            </div>
+          </div>
+
+          <div class="moment" id="m8">
+            <div class="momentMedia">
+              <img src="assets/story/08.jpg" alt="" loading="lazy"
+                   onerror="this.remove(); this.parentElement.innerHTML='<div class=momentPlaceholder>Photo slot 8<br>assets/story/08.jpg</div>';">
+            </div>
+            <div class="momentBody">
+              <div class="momentTop">
+                <span class="dateTag">YYYY-MM-DD</span>
+                <p class="momentTitle">Moment 8 title</p>
+              </div>
+              <p class="momentNote">Your text here.</p>
+            </div>
+          </div>
+
+          <div class="moment" id="m9">
+            <div class="momentMedia">
+              <img src="assets/story/09.jpg" alt="" loading="lazy"
+                   onerror="this.remove(); this.parentElement.innerHTML='<div class=momentPlaceholder>Photo slot 9<br>assets/story/09.jpg</div>';">
+            </div>
+            <div class="momentBody">
+              <div class="momentTop">
+                <span class="dateTag">YYYY-MM-DD</span>
+                <p class="momentTitle">Moment 9 title</p>
+              </div>
+              <p class="momentNote">Your text here.</p>
+            </div>
+          </div>
+
+          <div class="moment" id="m10">
+            <div class="momentMedia">
+              <img src="assets/story/10.jpg" alt="" loading="lazy"
+                   onerror="this.remove(); this.parentElement.innerHTML='<div class=momentPlaceholder>Photo slot 10<br>assets/story/10.jpg</div>';">
+            </div>
+            <div class="momentBody">
+              <div class="momentTop">
+                <span class="dateTag">YYYY-MM-DD</span>
+                <p class="momentTitle">Moment 10 title</p>
+              </div>
+              <p class="momentNote">Your text here.</p>
+            </div>
           </div>
         </div>
 
         <p class="hint">
-          Later, you can add photos by uploading them and placing an image tag inside a moment.
-          Example file: assets/story/01.jpg
+          Put your files here: assets/story/01.jpg up to assets/story/10.jpg
+          You can also use png, just update the filenames in the HTML.
         </p>
       </section>
 
@@ -864,7 +1048,6 @@
       ctx.restore();
     }
 
-    // Obstacles / pipes drawing (make them clearly visible)
     function drawObstacle(p){
       const x = p.x;
       const w = game.pipeW;
@@ -875,29 +1058,24 @@
 
       ctx.save();
 
-      // shadow for contrast
       ctx.shadowColor = "rgba(0,0,0,0.18)";
       ctx.shadowBlur = 10;
       ctx.shadowOffsetY = 4;
 
-      // hot pink pipes + white outline
       ctx.fillStyle = "#ff4da6";
       ctx.strokeStyle = "rgba(255,255,255,0.95)";
       ctx.lineWidth = 3;
 
-      // top
       ctx.beginPath();
       ctx.rect(x, 0, w, topH);
       ctx.fill();
       ctx.stroke();
 
-      // bottom
       ctx.beginPath();
       ctx.rect(x, bottomY, w, bottomH);
       ctx.fill();
       ctx.stroke();
 
-      // highlight stripe
       ctx.shadowColor = "transparent";
       ctx.fillStyle = "rgba(255,255,255,0.22)";
       ctx.fillRect(x + 8, 0, 8, topH);
@@ -911,7 +1089,6 @@
         drawObstacle(p);
       }
     }
-
 
     function drawBird(){
       const img = (state.player === "adam") ? imgAdam : imgSophia;
