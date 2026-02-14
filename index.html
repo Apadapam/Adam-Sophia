@@ -77,7 +77,6 @@
     @media (max-width: 520px){ h1{font-size:36px} }
     .sub{margin:0; color:var(--muted); max-width: 62ch}
 
-    /* HOME GRID: 3 tiles in one row on desktop */
     .grid{
       margin-top:18px;
       display:grid;
@@ -179,8 +178,28 @@
       border-radius: var(--radius);
       background: var(--card2);
       padding:14px;
+      overflow:hidden;
     }
     .muted{color:var(--muted)}
+
+    /* FIX: story intro text staying inside bubble on mobile */
+    .storyQuick{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-bottom: 12px;
+      max-width:100%;
+      min-width:0;
+    }
+    .storyQuick .pillSmall{
+      display:block;
+      max-width:100%;
+      min-width:0;
+      white-space:normal;
+      overflow-wrap:anywhere;
+      word-break:break-word;
+    }
 
     /* STORY STREAM FIXES */
     .timeline{
@@ -294,13 +313,6 @@
       border: 2px solid rgba(255,255,255,.6);
     }
 
-    .storyQuick{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      margin-bottom: 12px;
-    }
     .pillSmall{
       font-size:12px;
       padding:6px 10px;
@@ -357,7 +369,6 @@
       font-weight:800;
     }
 
-    /* Flappy end screen overlay */
     .overlay{
       position:fixed;
       inset:0;
@@ -426,7 +437,6 @@
       justify-content:flex-end;
     }
 
-    /* FUTURE REVEAL CARDS */
     .futureTop{
       display:flex;
       align-items:center;
@@ -840,7 +850,6 @@
         </div>
       </section>
 
-      <!-- FUTURE: click-to-reveal mini cards (unlocks one by one) -->
       <section id="futureView" class="card view" aria-label="Future view">
         <div class="row">
           <h2>What's next?</h2>
@@ -1242,7 +1251,6 @@
       });
     }
 
-    // FUTURE REVEALS
     const FUTURE_KEY = "pookie_future_reveals_v1";
 
     function getFutureProgress(){
@@ -1332,7 +1340,6 @@
       applyFutureState();
     }
 
-    // Flappy game
     const canvas = $("flappy");
     const ctx = canvas.getContext("2d");
 
