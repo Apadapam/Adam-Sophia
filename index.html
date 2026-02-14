@@ -380,6 +380,75 @@
       color: var(--muted);
       font-weight:800;
     }
+
+    /* Flappy end screen overlay */
+    .overlay{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      background: rgba(20,0,10,.35);
+      backdrop-filter: blur(6px);
+      z-index: 999;
+      padding: 18px;
+    }
+    .overlay.show{display:flex}
+
+    .overlayCard{
+      width: min(520px, 96vw);
+      border:1px solid rgba(255,255,255,.35);
+      border-radius: 22px;
+      background: rgba(255,255,255,.80);
+      box-shadow: 0 18px 50px rgba(0,0,0,.25);
+      overflow:hidden;
+      transform: scale(.92);
+      opacity: 0;
+      animation: popIn .18s ease forwards;
+    }
+    @keyframes popIn{
+      to{ transform: scale(1); opacity:1; }
+    }
+
+    .overlayMedia{
+      width:100%;
+      aspect-ratio: 16 / 10;
+      background: rgba(255,255,255,.70);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-bottom: 1px solid rgba(25,10,20,.10);
+    }
+    .overlayMedia img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      display:block;
+      padding: 10px;
+    }
+    .overlayBody{
+      padding: 14px 14px 16px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .overlayTitle{
+      margin:0;
+      font-weight:950;
+      font-size:20px;
+    }
+    .overlayScore{
+      margin:0;
+      color: rgba(25,10,20,.75);
+      font-weight:850;
+      font-size:16px;
+    }
+    .overlayBtns{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
   </style>
 </head>
 
@@ -404,12 +473,10 @@
           <div class="card tile" role="button" tabindex="0" data-open="storyView" aria-label="Open Our Story">
             <div class="tileTop">
               <div class="tileLeft">
-                <div class="icon" aria-hidden="true">
-                  <span class="iconEmoji">📖</span>
-                </div>
+                <div class="icon" aria-hidden="true"><span class="iconEmoji">📖</span></div>
                 <div>
                   <p class="title">Our Story</p>
-                  <p class="desc">Moments that make the time go by way too fast</p>
+                  <p class="desc">The moments in which time goes by way too fast</p>
                 </div>
               </div>
               <div class="arrow">›</div>
@@ -419,9 +486,7 @@
           <div class="card tile" role="button" tabindex="0" data-open="gameView" aria-label="Open game">
             <div class="tileTop">
               <div class="tileLeft">
-                <div class="icon" aria-hidden="true">
-                  <span class="iconEmoji">🎮</span>
-                </div>
+                <div class="icon" aria-hidden="true"><span class="iconEmoji">🎮</span></div>
                 <div>
                   <p class="title">Game</p>
                   <p class="desc">Since we are both competitive and hate to lose, why not get mad while trying to set a new record at this game?</p>
@@ -434,9 +499,7 @@
           <div class="card tile" role="button" tabindex="0" data-open="infoView" aria-label="Open info">
             <div class="tileTop">
               <div class="tileLeft">
-                <div class="icon" aria-hidden="true">
-                  <span class="iconEmoji">📝</span>
-                </div>
+                <div class="icon" aria-hidden="true"><span class="iconEmoji">📝</span></div>
                 <div>
                   <p class="title">Poems</p>
                   <p class="desc">Homemade art from two hopeless romantics</p>
@@ -449,9 +512,7 @@
           <div class="card tile" role="button" tabindex="0" data-open="futureView" aria-label="Open future">
             <div class="tileTop">
               <div class="tileLeft">
-                <div class="icon" aria-hidden="true">
-                  <span class="iconEmoji">🗓️</span>
-                </div>
+                <div class="icon" aria-hidden="true"><span class="iconEmoji">🗓️</span></div>
                 <div>
                   <p class="title">What's next?</p>
                   <p class="desc">Plans, wishes, the dream life of you and me</p>
@@ -729,6 +790,25 @@
     </main>
   </div>
 
+  <!-- Game over overlay -->
+  <div class="overlay" id="gameOverOverlay" aria-label="Game over screen" role="dialog" aria-modal="true">
+    <div class="overlayCard">
+      <div class="overlayMedia">
+        <img id="winImg" src="assets/adamwin.png" alt="Win screen image"
+             onerror="this.style.display='none'">
+      </div>
+      <div class="overlayBody">
+        <p class="overlayTitle" id="overTitle">Round finished</p>
+        <p class="overlayScore">Score: <b id="overScore">0</b> | Best: <b id="overBest">0</b></p>
+        <div class="overlayBtns">
+          <button class="btn btnPrimary" id="overlayRestart" type="button">Play again</button>
+          <button class="btn" id="overlayChange" type="button">Change player</button>
+          <button class="btn" id="overlayClose" type="button">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     const $ = (id) => document.getElementById(id);
 
@@ -764,6 +844,7 @@
       document.querySelectorAll("[data-back]").forEach(btn => {
         btn.addEventListener("click", () => {
           stopFlappy();
+          hideGameOver();
           showHome();
         });
       });
@@ -792,6 +873,7 @@
       $("daysLeft").textContent = String(Math.max(0, left));
     }
 
+    // Flappy game
     const canvas = $("flappy");
     const ctx = canvas.getContext("2d");
 
@@ -799,6 +881,10 @@
     const imgSophia = new Image();
     imgAdam.src = "assets/adam.png";
     imgSophia.src = "assets/sophia.png";
+
+    // Win images you will upload:
+    const winAdam = "assets/adamwin.png";
+    const winSophia = "assets/sophiawin.png";
 
     let running = false;
     let paused = false;
@@ -944,6 +1030,11 @@
       $("difficultyPill").textContent = difficultyLabel();
     }
 
+    function triggerGameOver(){
+      state.gameOver = true;
+      showGameOver();
+    }
+
     function update(dt){
       if(paused) return;
       if(state.gameOver) return;
@@ -992,7 +1083,8 @@
         game.bird.vy = 0;
       }
       if(game.bird.y + game.bird.r >= floor){
-        state.gameOver = true;
+        triggerGameOver();
+        return;
       }
 
       for(const p of game.pipes){
@@ -1003,8 +1095,8 @@
           circleRectHit(game.bird.x, game.bird.y, game.bird.r, topRect.x, topRect.y, topRect.w, topRect.h) ||
           circleRectHit(game.bird.x, game.bird.y, game.bird.r, botRect.x, botRect.y, botRect.w, botRect.h)
         ){
-          state.gameOver = true;
-          break;
+          triggerGameOver();
+          return;
         }
       }
     }
@@ -1136,14 +1228,6 @@
         ctx.fillText("Paused", canvas.width/2, canvas.height/2);
       }
 
-      if(state.gameOver){
-        ctx.textAlign = "center";
-        ctx.font = "900 40px system-ui, -apple-system, Segoe UI, Roboto, Arial";
-        ctx.fillText("Game over", canvas.width/2, canvas.height/2 - 10);
-        ctx.font = "900 18px system-ui, -apple-system, Segoe UI, Roboto, Arial";
-        ctx.fillText("Press Restart or tap", canvas.width/2, canvas.height/2 + 22);
-      }
-
       ctx.restore();
     }
 
@@ -1159,28 +1243,66 @@
       rafId = requestAnimationFrame(loop);
     }
 
+    // Overlay controls
+    function showGameOver(){
+      const imgEl = $("winImg");
+      imgEl.style.display = "block";
+      imgEl.src = (state.player === "adam") ? winAdam : winSophia;
+
+      $("overScore").textContent = String(state.score);
+      $("overBest").textContent = String(state.best);
+      $("overTitle").textContent = "Round finished";
+
+      $("gameOverOverlay").classList.add("show");
+    }
+    function hideGameOver(){
+      $("gameOverOverlay").classList.remove("show");
+    }
+
+    function tryRestartFromOverlay(){
+      hideGameOver();
+      resetFlappy();
+      state.started = true;
+      flap();
+    }
+
+    function tryChangePlayerFromOverlay(){
+      hideGameOver();
+      stopFlappy();
+    }
+
     window.addEventListener("keydown", (e) => {
       if(e.key === " "){
         if(state.gameOver){
-          resetFlappy();
-          state.started = true;
+          tryRestartFromOverlay();
+          e.preventDefault();
+          return;
         }
         flap();
         e.preventDefault();
       }
       if(e.key === "p" || e.key === "P"){
-        paused = !paused;
-        $("pauseBtn").textContent = paused ? "Resume" : "Pause";
+        if(!state.gameOver){
+          paused = !paused;
+          $("pauseBtn").textContent = paused ? "Resume" : "Pause";
+        }
         e.preventDefault();
+      }
+      if(e.key === "Escape"){
+        if($("gameOverOverlay").classList.contains("show")){
+          hideGameOver();
+          e.preventDefault();
+        }
       }
     }, { passive:false });
 
     canvas.addEventListener("pointerdown", (e) => {
       if(!running) return;
       canvas.setPointerCapture(e.pointerId);
+
       if(state.gameOver){
-        resetFlappy();
-        state.started = true;
+        tryRestartFromOverlay();
+        return;
       }
       flap();
     });
@@ -1208,18 +1330,37 @@
       $("pickSophia").addEventListener("click", () => startFlappy("sophia"));
 
       $("pauseBtn").addEventListener("click", () => {
+        if(state.gameOver) return;
         paused = !paused;
         $("pauseBtn").textContent = paused ? "Resume" : "Pause";
       });
 
       $("restartBtn").addEventListener("click", () => {
+        hideGameOver();
         resetFlappy();
         state.started = true;
         flap();
       });
 
       $("changePlayerBtn").addEventListener("click", () => {
+        hideGameOver();
         stopFlappy();
+      });
+
+      // Overlay buttons
+      $("overlayRestart").addEventListener("click", () => {
+        tryRestartFromOverlay();
+      });
+      $("overlayChange").addEventListener("click", () => {
+        tryChangePlayerFromOverlay();
+      });
+      $("overlayClose").addEventListener("click", () => {
+        hideGameOver();
+      });
+
+      // Clicking outside closes
+      $("gameOverOverlay").addEventListener("click", (e) => {
+        if(e.target === $("gameOverOverlay")) hideGameOver();
       });
     }
 
