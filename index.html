@@ -77,7 +77,6 @@
     @media (max-width: 520px){ h1{font-size:36px} }
     .sub{margin:0; color:var(--muted); max-width: 62ch}
 
-    /* 3 tiles next to each other on desktop */
     .grid{
       margin-top:18px;
       display:grid;
@@ -299,12 +298,11 @@
       min-width:0;
     }
 
-    /* HARD FIX: clip any child corners inside the rounded panel on mobile */
+    /* Clip corners so text never "leaks" outside on mobile */
     .panel.storyQuick{
       overflow:hidden;
     }
 
-    .pillSmall{
     .pillSmall{
       display:block;
       width:100%;
@@ -312,19 +310,17 @@
       font-size:12px;
       padding:14px 16px;
       border:1px solid var(--line);
-      border-radius:16px;              /* was 999px */
+      border-radius:16px;
       background: rgba(255,255,255,.7);
       color: var(--muted);
       font-weight:800;
-
-      line-height:1.55;                /* helps on mobile */
+      line-height:1.55;
       white-space:normal;
       overflow-wrap:anywhere;
       word-break:break-word;
       hyphens:auto;
       background-clip: padding-box;
     }
-
 
     .gameWrap{display:grid; gap:12px;}
     .chooser{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
@@ -863,14 +859,11 @@
 
         <div class="panel">
           <div class="futureTop">
-            <p class="muted" style="margin:0">
-              A little list of things I want to do with you.
-            </p>
+            <p class="muted" style="margin:0">A little list of things I want to do with you.</p>
             <p class="miniHint" id="futureHint">Start with card 1. Each reveal unlocks the next.</p>
           </div>
 
           <div class="futureGrid" id="futureGrid" aria-label="Future plans reveal cards">
-            <!-- 1 -->
             <button class="revealCard" type="button" data-future-card data-index="0" aria-label="Reveal plan 1" tabindex="0">
               <span class="sparkle" aria-hidden="true">✨</span>
               <div class="front">
@@ -893,7 +886,6 @@
               </div>
             </button>
 
-            <!-- 2 -->
             <button class="revealCard locked" type="button" data-future-card data-index="1" aria-label="Reveal plan 2" tabindex="-1" aria-disabled="true">
               <span class="sparkle" aria-hidden="true">✨</span>
               <div class="front">
@@ -916,7 +908,6 @@
               </div>
             </button>
 
-            <!-- 3 -->
             <button class="revealCard locked" type="button" data-future-card data-index="2" aria-label="Reveal plan 3" tabindex="-1" aria-disabled="true">
               <span class="sparkle" aria-hidden="true">✨</span>
               <div class="front">
@@ -939,7 +930,6 @@
               </div>
             </button>
 
-            <!-- 4 -->
             <button class="revealCard locked" type="button" data-future-card data-index="3" aria-label="Reveal plan 4" tabindex="-1" aria-disabled="true">
               <span class="sparkle" aria-hidden="true">✨</span>
               <div class="front">
@@ -962,7 +952,6 @@
               </div>
             </button>
 
-            <!-- 5 -->
             <button class="revealCard locked" type="button" data-future-card data-index="4" aria-label="Reveal plan 5" tabindex="-1" aria-disabled="true">
               <span class="sparkle" aria-hidden="true">✨</span>
               <div class="front">
@@ -985,7 +974,6 @@
               </div>
             </button>
 
-            <!-- 6 -->
             <button class="revealCard locked" type="button" data-future-card data-index="5" aria-label="Reveal plan 6" tabindex="-1" aria-disabled="true">
               <span class="sparkle" aria-hidden="true">✨</span>
               <div class="front">
@@ -1008,7 +996,6 @@
               </div>
             </button>
 
-            <!-- 7 -->
             <button class="revealCard locked" type="button" data-future-card data-index="6" aria-label="Reveal plan 7" tabindex="-1" aria-disabled="true">
               <span class="sparkle" aria-hidden="true">✨</span>
               <div class="front">
@@ -1031,7 +1018,6 @@
               </div>
             </button>
 
-            <!-- 8 -->
             <button class="revealCard locked" type="button" data-future-card data-index="7" aria-label="Reveal plan 8" tabindex="-1" aria-disabled="true">
               <span class="sparkle" aria-hidden="true">✨</span>
               <div class="front">
@@ -1054,7 +1040,6 @@
               </div>
             </button>
 
-            <!-- 9 -->
             <button class="revealCard locked" type="button" data-future-card data-index="8" aria-label="Reveal plan 9" tabindex="-1" aria-disabled="true">
               <span class="sparkle" aria-hidden="true">✨</span>
               <div class="front">
@@ -1077,7 +1062,6 @@
               </div>
             </button>
 
-            <!-- 10 -->
             <button class="revealCard locked" type="button" data-future-card data-index="9" aria-label="Reveal plan 10" tabindex="-1" aria-disabled="true">
               <span class="sparkle" aria-hidden="true">✨</span>
               <div class="front">
@@ -1100,7 +1084,6 @@
               </div>
             </button>
 
-            <!-- 11 -->
             <button class="revealCard locked" type="button" data-future-card data-index="10" aria-label="Reveal plan 11" tabindex="-1" aria-disabled="true">
               <span class="sparkle" aria-hidden="true">✨</span>
               <div class="front">
@@ -1123,7 +1106,6 @@
               </div>
             </button>
 
-            <!-- 12 -->
             <button class="revealCard locked" type="button" data-future-card data-index="11" aria-label="Reveal plan 12" tabindex="-1" aria-disabled="true">
               <span class="sparkle" aria-hidden="true">✨</span>
               <div class="front">
@@ -1146,7 +1128,6 @@
               </div>
             </button>
 
-            <!-- 13 -->
             <button class="revealCard locked" type="button" data-future-card data-index="12" aria-label="Reveal plan 13" tabindex="-1" aria-disabled="true">
               <span class="sparkle" aria-hidden="true">✨</span>
               <div class="front">
@@ -1169,7 +1150,6 @@
               </div>
             </button>
 
-            <!-- 14 -->
             <button class="revealCard locked" type="button" data-future-card data-index="13" aria-label="Reveal plan 14" tabindex="-1" aria-disabled="true">
               <span class="sparkle" aria-hidden="true">✨</span>
               <div class="front">
