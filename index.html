@@ -419,6 +419,140 @@
       flex-wrap:wrap;
       justify-content:flex-end;
     }
+
+    /* FUTURE REVEAL CARDS */
+    .futureTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom: 10px;
+    }
+    .miniHint{
+      font-size:13px;
+      color: var(--muted);
+      margin: 0;
+    }
+    .futureGrid{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:12px;
+    }
+    @media (max-width: 720px){
+      .futureGrid{grid-template-columns: 1fr;}
+    }
+
+    .revealCard{
+      border:1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255,255,255,.70);
+      box-shadow: 0 10px 20px rgba(20,0,10,.08);
+      padding:0;
+      overflow:hidden;
+      cursor:pointer;
+      position:relative;
+      min-height:110px;
+      display:flex;
+      transition: transform .12s ease, border-color .12s ease, filter .12s ease, opacity .12s ease;
+    }
+    .revealCard:hover{
+      transform: translateY(-1px);
+      border-color: rgba(25,10,20,.22);
+    }
+    .revealCard:focus{
+      outline: 3px solid rgba(255,77,166,.28);
+      outline-offset: 2px;
+    }
+
+    .revealInner{
+      padding:14px;
+      width:100%;
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+    }
+
+    .revealBadge{
+      width:44px;
+      height:44px;
+      border-radius: 14px;
+      border:1px solid var(--line);
+      background:
+        radial-gradient(280px 140px at 10% 10%, rgba(255,77,166,.22), transparent 60%),
+        radial-gradient(240px 150px at 90% 60%, rgba(124,58,237,.18), transparent 60%),
+        rgba(255,255,255,.65);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex: 0 0 auto;
+      box-shadow: 0 10px 20px rgba(20,0,10,.10);
+    }
+    .revealBadge span{
+      font-weight:950;
+      color: rgba(25,10,20,.78);
+    }
+
+    .revealText{
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      flex:1;
+    }
+    .revealTitle{
+      margin:0;
+      font-size:14px;
+      font-weight:900;
+      color: rgba(25,10,20,.78);
+    }
+    .revealLine{
+      margin:0;
+      font-size:14px;
+      color: var(--muted);
+    }
+
+    .revealCard.locked{
+      cursor:not-allowed;
+      opacity:.55;
+      filter: grayscale(.15);
+    }
+    .revealCard.locked:hover{
+      transform:none;
+      border-color: var(--line);
+    }
+
+    .revealCard .front,
+    .revealCard .back{
+      width:100%;
+    }
+    .revealCard .back{
+      display:none;
+    }
+    .revealCard.revealed .front{
+      display:none;
+    }
+    .revealCard.revealed .back{
+      display:block;
+      animation: revealPop .16s ease both;
+    }
+    @keyframes revealPop{
+      from{ transform: scale(.98); opacity:.6; }
+      to{ transform: scale(1); opacity:1; }
+    }
+
+    .sparkle{
+      position:absolute;
+      right:12px;
+      top:10px;
+      font-size:16px;
+      opacity:.65;
+      user-select:none;
+      pointer-events:none;
+    }
+    .revealCard.revealed .sparkle{
+      opacity:.9;
+    }
   </style>
 </head>
 
@@ -736,7 +870,7 @@
         </div>
       </section>
 
-      <!-- SIMPLIFIED: no dates, no countdown, just a clean bullet list -->
+      <!-- FUTURE: click-to-reveal mini cards (unlocks one by one) -->
       <section id="futureView" class="card view" aria-label="Future view">
         <div class="row">
           <h2>What's next?</h2>
@@ -744,27 +878,346 @@
         </div>
 
         <div class="panel">
-          <p class="muted" style="margin-top:0">
-            A little list of things I want to do with you.
-          </p>
+          <div class="futureTop">
+            <p class="muted" style="margin:0">
+              A little list of things I want to do with you.
+            </p>
+            <p class="miniHint" id="futureHint">Start with card 1. Each reveal unlocks the next.</p>
+          </div>
 
-          <ul class="muted" style="margin:0; padding-left:18px">
-            <li>Be gym buddies</li>
-            <li>Go to the cinema together, how come we still haven't gone???</li>
-            <li>Go on a random unplanned weekend trip, and travel in general</li>
-            <li>Have a picnic somewhere nice</li>
-            <li>Watch some more sunsets together</li>
-            <li>Make a cheescake, and many more other cakes</li>
-            <li>Teach you how to play tennis</li>
-            <li>Develop soome more rituals and habits that only make sense for our relationship</li>
-            <li>Read books</li>
-            <li>Play board games and video games</li>
-            <li>Make a song</li>
-            <li>Have fun outside, you know, lots of fun</li>
-            <li>Discover some spots and places we love to go to, such as a cafe or a viewpoint</li>
-            <li>Start a life together with no more goodbyes</li>
-            
-          </ul>
+          <div class="futureGrid" id="futureGrid" aria-label="Future plans reveal cards">
+            <!-- 1 -->
+            <button class="revealCard" type="button" data-future-card data-index="0" aria-label="Reveal plan 1" tabindex="0">
+              <span class="sparkle" aria-hidden="true">✨</span>
+              <div class="front">
+                <div class="revealInner">
+                  <div class="revealBadge" aria-hidden="true"><span>1</span></div>
+                  <div class="revealText">
+                    <p class="revealTitle">Secret plan</p>
+                    <p class="revealLine">Click to reveal</p>
+                  </div>
+                </div>
+              </div>
+              <div class="back">
+                <div class="revealInner">
+                  <div class="revealBadge" aria-hidden="true"><span>1</span></div>
+                  <div class="revealText">
+                    <p class="revealTitle">Unlocked</p>
+                    <p class="revealLine">Be gym buddies</p>
+                  </div>
+                </div>
+              </div>
+            </button>
+
+            <!-- 2 -->
+            <button class="revealCard locked" type="button" data-future-card data-index="1" aria-label="Reveal plan 2" tabindex="-1" aria-disabled="true">
+              <span class="sparkle" aria-hidden="true">✨</span>
+              <div class="front">
+                <div class="revealInner">
+                  <div class="revealBadge" aria-hidden="true"><span>2</span></div>
+                  <div class="revealText">
+                    <p class="revealTitle">Locked</p>
+                    <p class="revealLine">Reveal the previous one first</p>
+                  </div>
+                </div>
+              </div>
+              <div class="back">
+                <div class="revealInner">
+                  <div class="revealBadge" aria-hidden="true"><span>2</span></div>
+                  <div class="revealText">
+                    <p class="revealTitle">Unlocked</p>
+                    <p class="revealLine">Go to the cinema together, how come we still haven't gone???</p>
+                  </div>
+                </div>
+              </div>
+            </button>
+
+            <!-- 3 -->
+            <button class="revealCard locked" type="button" data-future-card data-index="2" aria-label="Reveal plan 3" tabindex="-1" aria-disabled="true">
+              <span class="sparkle" aria-hidden="true">✨</span>
+              <div class="front">
+                <div class="revealInner">
+                  <div class="revealBadge" aria-hidden="true"><span>3</span></div>
+                  <div class="revealText">
+                    <p class="revealTitle">Locked</p>
+                    <p class="revealLine">Reveal the previous one first</p>
+                  </div>
+                </div>
+              </div>
+              <div class="back">
+                <div class="revealInner">
+                  <div class="revealBadge" aria-hidden="true"><span>3</span></div>
+                  <div class="revealText">
+                    <p class="revealTitle">Unlocked</p>
+                    <p class="revealLine">Go on a random unplanned weekend trip, and travel in general</p>
+                  </div>
+                </div>
+              </div>
+            </button>
+
+            <!-- 4 -->
+            <button class="revealCard locked" type="button" data-future-card data-index="3" aria-label="Reveal plan 4" tabindex="-1" aria-disabled="true">
+              <span class="sparkle" aria-hidden="true">✨</span>
+              <div class="front">
+                <div class="revealInner">
+                  <div class="revealBadge" aria-hidden="true"><span>4</span></div>
+                  <div class="revealText">
+                    <p class="revealTitle">Locked</p>
+                    <p class="revealLine">Reveal the previous one first</p>
+                  </div>
+                </div>
+              </div>
+              <div class="back">
+                <div class="revealInner">
+                  <div class="revealBadge" aria-hidden="true"><span>4</span></div>
+                  <div class="revealText">
+                    <p class="revealTitle">Unlocked</p>
+                    <p class="revealLine">Have a picnic somewhere nice</p>
+                  </div>
+                </div>
+              </div>
+            </button>
+
+            <!-- 5 -->
+            <button class="revealCard locked" type="button" data-future-card data-index="4" aria-label="Reveal plan 5" tabindex="-1" aria-disabled="true">
+              <span class="sparkle" aria-hidden="true">✨</span>
+              <div class="front">
+                <div class="revealInner">
+                  <div class="revealBadge" aria-hidden="true"><span>5</span></div>
+                  <div class="revealText">
+                    <p class="revealTitle">Locked</p>
+                    <p class="revealLine">Reveal the previous one first</p>
+                  </div>
+                </div>
+              </div>
+              <div class="back">
+                <div class="revealInner">
+                  <div class="revealBadge" aria-hidden="true"><span>5</span></div>
+                  <div class="revealText">
+                    <p class="revealTitle">Unlocked</p>
+                    <p class="revealLine">Watch some more sunsets together</p>
+                  </div>
+                </div>
+              </div>
+            </button>
+
+            <!-- 6 -->
+            <button class="revealCard locked" type="button" data-future-card data-index="5" aria-label="Reveal plan 6" tabindex="-1" aria-disabled="true">
+              <span class="sparkle" aria-hidden="true">✨</span>
+              <div class="front">
+                <div class="revealInner">
+                  <div class="revealBadge" aria-hidden="true"><span>6</span></div>
+                  <div class="revealText">
+                    <p class="revealTitle">Locked</p>
+                    <p class="revealLine">Reveal the previous one first</p>
+                  </div>
+                </div>
+              </div>
+              <div class="back">
+                <div class="revealInner">
+                  <div class="revealBadge" aria-hidden="true"><span>6</span></div>
+                  <div class="revealText">
+                    <p class="revealTitle">Unlocked</p>
+                    <p class="revealLine">Make a cheescake, and many more other cakes</p>
+                  </div>
+                </div>
+              </div>
+            </button>
+
+            <!-- 7 -->
+            <button class="revealCard locked" type="button" data-future-card data-index="6" aria-label="Reveal plan 7" tabindex="-1" aria-disabled="true">
+              <span class="sparkle" aria-hidden="true">✨</span>
+              <div class="front">
+                <div class="revealInner">
+                  <div class="revealBadge" aria-hidden="true"><span>7</span></div>
+                  <div class="revealText">
+                    <p class="revealTitle">Locked</p>
+                    <p class="revealLine">Reveal the previous one first</p>
+                  </div>
+                </div>
+              </div>
+              <div class="back">
+                <div class="revealInner">
+                  <div class="revealBadge" aria-hidden="true"><span>7</span></div>
+                  <div class="revealText">
+                    <p class="revealTitle">Unlocked</p>
+                    <p class="revealLine">Teach you how to play tennis</p>
+                  </div>
+                </div>
+              </div>
+            </button>
+
+            <!-- 8 -->
+            <button class="revealCard locked" type="button" data-future-card data-index="7" aria-label="Reveal plan 8" tabindex="-1" aria-disabled="true">
+              <span class="sparkle" aria-hidden="true">✨</span>
+              <div class="front">
+                <div class="revealInner">
+                  <div class="revealBadge" aria-hidden="true"><span>8</span></div>
+                  <div class="revealText">
+                    <p class="revealTitle">Locked</p>
+                    <p class="revealLine">Reveal the previous one first</p>
+                  </div>
+                </div>
+              </div>
+              <div class="back">
+                <div class="revealInner">
+                  <div class="revealBadge" aria-hidden="true"><span>8</span></div>
+                  <div class="revealText">
+                    <p class="revealTitle">Unlocked</p>
+                    <p class="revealLine">Develop soome more rituals and habits that only make sense for our relationship</p>
+                  </div>
+                </div>
+              </div>
+            </button>
+
+            <!-- 9 -->
+            <button class="revealCard locked" type="button" data-future-card data-index="8" aria-label="Reveal plan 9" tabindex="-1" aria-disabled="true">
+              <span class="sparkle" aria-hidden="true">✨</span>
+              <div class="front">
+                <div class="revealInner">
+                  <div class="revealBadge" aria-hidden="true"><span>9</span></div>
+                  <div class="revealText">
+                    <p class="revealTitle">Locked</p>
+                    <p class="revealLine">Reveal the previous one first</p>
+                  </div>
+                </div>
+              </div>
+              <div class="back">
+                <div class="revealInner">
+                  <div class="revealBadge" aria-hidden="true"><span>9</span></div>
+                  <div class="revealText">
+                    <p class="revealTitle">Unlocked</p>
+                    <p class="revealLine">Read books</p>
+                  </div>
+                </div>
+              </div>
+            </button>
+
+            <!-- 10 -->
+            <button class="revealCard locked" type="button" data-future-card data-index="9" aria-label="Reveal plan 10" tabindex="-1" aria-disabled="true">
+              <span class="sparkle" aria-hidden="true">✨</span>
+              <div class="front">
+                <div class="revealInner">
+                  <div class="revealBadge" aria-hidden="true"><span>10</span></div>
+                  <div class="revealText">
+                    <p class="revealTitle">Locked</p>
+                    <p class="revealLine">Reveal the previous one first</p>
+                  </div>
+                </div>
+              </div>
+              <div class="back">
+                <div class="revealInner">
+                  <div class="revealBadge" aria-hidden="true"><span>10</span></div>
+                  <div class="revealText">
+                    <p class="revealTitle">Unlocked</p>
+                    <p class="revealLine">Play board games and video games</p>
+                  </div>
+                </div>
+              </div>
+            </button>
+
+            <!-- 11 -->
+            <button class="revealCard locked" type="button" data-future-card data-index="10" aria-label="Reveal plan 11" tabindex="-1" aria-disabled="true">
+              <span class="sparkle" aria-hidden="true">✨</span>
+              <div class="front">
+                <div class="revealInner">
+                  <div class="revealBadge" aria-hidden="true"><span>11</span></div>
+                  <div class="revealText">
+                    <p class="revealTitle">Locked</p>
+                    <p class="revealLine">Reveal the previous one first</p>
+                  </div>
+                </div>
+              </div>
+              <div class="back">
+                <div class="revealInner">
+                  <div class="revealBadge" aria-hidden="true"><span>11</span></div>
+                  <div class="revealText">
+                    <p class="revealTitle">Unlocked</p>
+                    <p class="revealLine">Make a song</p>
+                  </div>
+                </div>
+              </div>
+            </button>
+
+            <!-- 12 -->
+            <button class="revealCard locked" type="button" data-future-card data-index="11" aria-label="Reveal plan 12" tabindex="-1" aria-disabled="true">
+              <span class="sparkle" aria-hidden="true">✨</span>
+              <div class="front">
+                <div class="revealInner">
+                  <div class="revealBadge" aria-hidden="true"><span>12</span></div>
+                  <div class="revealText">
+                    <p class="revealTitle">Locked</p>
+                    <p class="revealLine">Reveal the previous one first</p>
+                  </div>
+                </div>
+              </div>
+              <div class="back">
+                <div class="revealInner">
+                  <div class="revealBadge" aria-hidden="true"><span>12</span></div>
+                  <div class="revealText">
+                    <p class="revealTitle">Unlocked</p>
+                    <p class="revealLine">Have fun outside, you know, lots of fun</p>
+                  </div>
+                </div>
+              </div>
+            </button>
+
+            <!-- 13 -->
+            <button class="revealCard locked" type="button" data-future-card data-index="12" aria-label="Reveal plan 13" tabindex="-1" aria-disabled="true">
+              <span class="sparkle" aria-hidden="true">✨</span>
+              <div class="front">
+                <div class="revealInner">
+                  <div class="revealBadge" aria-hidden="true"><span>13</span></div>
+                  <div class="revealText">
+                    <p class="revealTitle">Locked</p>
+                    <p class="revealLine">Reveal the previous one first</p>
+                  </div>
+                </div>
+              </div>
+              <div class="back">
+                <div class="revealInner">
+                  <div class="revealBadge" aria-hidden="true"><span>13</span></div>
+                  <div class="revealText">
+                    <p class="revealTitle">Unlocked</p>
+                    <p class="revealLine">Discover some spots and places we love to go to, such as a cafe or a viewpoint</p>
+                  </div>
+                </div>
+              </div>
+            </button>
+
+            <!-- 14 -->
+            <button class="revealCard locked" type="button" data-future-card data-index="13" aria-label="Reveal plan 14" tabindex="-1" aria-disabled="true">
+              <span class="sparkle" aria-hidden="true">✨</span>
+              <div class="front">
+                <div class="revealInner">
+                  <div class="revealBadge" aria-hidden="true"><span>14</span></div>
+                  <div class="revealText">
+                    <p class="revealTitle">Locked</p>
+                    <p class="revealLine">Reveal the previous one first</p>
+                  </div>
+                </div>
+              </div>
+              <div class="back">
+                <div class="revealInner">
+                  <div class="revealBadge" aria-hidden="true"><span>14</span></div>
+                  <div class="revealText">
+                    <p class="revealTitle">Unlocked</p>
+                    <p class="revealLine">Start a life together with no more goodbyes</p>
+                  </div>
+                </div>
+              </div>
+            </button>
+
+          </div>
+
+          <div style="height:12px"></div>
+
+          <div class="panel" style="background: rgba(255,255,255,.70)">
+            <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between">
+              <p class="miniHint" style="margin:0">Tip: you can also press Enter on a card.</p>
+              <button class="btn" id="resetFuture" type="button">Reset reveals</button>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -833,6 +1286,98 @@
           showHome();
         });
       });
+    }
+
+    // FUTURE REVEALS
+    const FUTURE_KEY = "pookie_future_reveals_v1";
+
+    function getFutureProgress(){
+      const raw = localStorage.getItem(FUTURE_KEY);
+      const n = raw ? parseInt(raw, 10) : 0;
+      return Number.isFinite(n) ? Math.max(0, n) : 0;
+    }
+    function setFutureProgress(n){
+      localStorage.setItem(FUTURE_KEY, String(n));
+    }
+
+    function setCardLocked(card, locked){
+      if(locked){
+        card.classList.add("locked");
+        card.setAttribute("aria-disabled", "true");
+        card.tabIndex = -1;
+      }else{
+        card.classList.remove("locked");
+        card.removeAttribute("aria-disabled");
+        card.tabIndex = 0;
+      }
+    }
+
+    function applyFutureState(){
+      const cards = Array.from(document.querySelectorAll("[data-future-card]"));
+      const progress = getFutureProgress();
+
+      cards.forEach((card, i) => {
+        const revealed = i < progress;
+        card.classList.toggle("revealed", revealed);
+        setCardLocked(card, i > progress);
+      });
+
+      if(cards[0]){
+        setCardLocked(cards[0], false);
+      }
+
+      const hint = $("futureHint");
+      if(hint){
+        if(progress >= cards.length){
+          hint.textContent = "All unlocked. That is our whole future right there.";
+        }else if(progress === 0){
+          hint.textContent = "Start with card 1. Each reveal unlocks the next.";
+        }else{
+          hint.textContent = "Nice. Keep going. Next up: card " + (progress + 1) + ".";
+        }
+      }
+    }
+
+    function initFutureCards(){
+      const cards = Array.from(document.querySelectorAll("[data-future-card]"));
+
+      cards.forEach((card, i) => {
+        card.addEventListener("click", () => {
+          if(card.classList.contains("locked")) return;
+          if(card.classList.contains("revealed")) return;
+
+          card.classList.add("revealed");
+
+          const nextProgress = i + 1;
+          const cur = getFutureProgress();
+          if(nextProgress > cur) setFutureProgress(nextProgress);
+
+          applyFutureState();
+
+          const nextCard = cards[i + 1];
+          if(nextCard && !nextCard.classList.contains("locked")){
+            nextCard.focus({ preventScroll: true });
+          }
+        });
+
+        card.addEventListener("keydown", (e) => {
+          if(e.key === "Enter" || e.key === " "){
+            card.click();
+            e.preventDefault();
+          }
+        });
+      });
+
+      const resetBtn = $("resetFuture");
+      if(resetBtn){
+        resetBtn.addEventListener("click", () => {
+          setFutureProgress(0);
+          applyFutureState();
+          if(cards[0]) cards[0].focus({ preventScroll: true });
+        });
+      }
+
+      applyFutureState();
     }
 
     // Flappy game
@@ -1269,6 +1814,7 @@
       $("footYear").textContent = "© " + new Date().getFullYear();
 
       wireTiles();
+      initFutureCards();
 
       $("pickAdam").addEventListener("click", () => startFlappy("adam"));
       $("pickSophia").addEventListener("click", () => startFlappy("sophia"));
