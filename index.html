@@ -305,20 +305,26 @@
     }
 
     .pillSmall{
+    .pillSmall{
       display:block;
       width:100%;
       max-width:100%;
       font-size:12px;
-      padding:10px 12px;
+      padding:14px 16px;
       border:1px solid var(--line);
-      border-radius:999px;
+      border-radius:16px;              /* was 999px */
       background: rgba(255,255,255,.7);
       color: var(--muted);
       font-weight:800;
+
+      line-height:1.55;                /* helps on mobile */
       white-space:normal;
       overflow-wrap:anywhere;
       word-break:break-word;
+      hyphens:auto;
+      background-clip: padding-box;
     }
+
 
     .gameWrap{display:grid; gap:12px;}
     .chooser{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
