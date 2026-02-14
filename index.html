@@ -133,15 +133,6 @@
       transform: translateY(1px);
     }
 
-    .badge{
-      font-size:12px;
-      padding:6px 10px;
-      border:1px solid var(--line);
-      border-radius:999px;
-      background: rgba(255,255,255,.6);
-      color: var(--muted);
-      white-space:nowrap;
-    }
     .title{margin:0; font-size:18px; font-weight:850}
     .desc{margin:0; color:var(--muted); font-size:14px}
     .arrow{color:var(--muted); font-size:18px; user-select:none}
@@ -193,7 +184,6 @@
       flex-direction:column;
       gap:14px;
     }
-    /* simpler, less "weird" side line */
     .timeline::before{
       content:"";
       position:absolute;
@@ -233,7 +223,6 @@
       transform: translateX(-18px);
     }
 
-    /* Bigger pictures */
     .momentMedia{
       border-radius: 16px;
       border:1px solid rgba(25,10,20,.12);
@@ -284,12 +273,6 @@
     }
     .momentTitle{margin:0; font-weight:900}
     .momentNote{margin:0; color:var(--muted)}
-
-    .hint{
-      font-size:13px;
-      color: var(--muted);
-      margin: 10px 0 0;
-    }
 
     .storyScroller{
       max-height: 72vh;
@@ -350,22 +333,6 @@
       justify-content:space-between;
     }
     .hidden{display:none}
-
-    input[type="text"]{
-      width:100%;
-      padding:12px 12px;
-      border-radius: 12px;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.75);
-      color: var(--text);
-      font: inherit;
-      outline:none;
-    }
-    .two{
-      display:grid; grid-template-columns: 1fr auto; gap:10px;
-      align-items:center;
-    }
-    @media (max-width: 520px){ .two{grid-template-columns:1fr} }
 
     footer{
       margin-top:22px;
@@ -537,7 +504,6 @@
           <span class="pillSmall">I don't know about you, but I always like to go back and remember the moments we have shared. I do miss it a lot and part of me would love to relive it, but I am happy we keep on working on our story. This is just the beginning of an endless list.</span>
         </div>
 
-        <!-- FIX: keep ALL moments inside the timeline scroller so they do not "float out" -->
         <div class="panel timeline storyScroller" id="storyTimeline">
           <div class="moment" id="m1">
             <div class="momentMedia">
@@ -707,8 +673,6 @@
             </div>
           </div>
         </div>
-
-        <p class="hint"></p>
       </section>
 
       <section id="gameView" class="card view" aria-label="Game view">
@@ -745,8 +709,6 @@
             </div>
 
             <canvas id="flappy" width="900" height="520" aria-label="Flappy game canvas"></canvas>
-
-            <p class="hint"></p>
           </div>
         </div>
       </section>
@@ -774,44 +736,27 @@
         </div>
       </section>
 
+      <!-- SIMPLIFIED: no dates, no countdown, just a clean bullet list -->
       <section id="futureView" class="card view" aria-label="Future view">
         <div class="row">
-          <h2>Future</h2>
+          <h2>What's next?</h2>
           <button class="btn" data-back>Back</button>
         </div>
 
         <div class="panel">
           <p class="muted" style="margin-top:0">
-            Add plans and a countdown to the next date.
+            A little list of things I want to do with you.
           </p>
 
-          <div class="panel" style="background: rgba(255,255,255,.70)">
-            <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center">
-              <span class="footerPill">Next date: <b id="nextDateLabel">2026-02-14</b></span>
-              <span class="footerPill">Days left: <b id="daysLeft">0</b></span>
-            </div>
-          </div>
-
-          <div style="height:10px"></div>
-
           <ul class="muted" style="margin:0; padding-left:18px">
-            <li>Plan: picnic + photos</li>
-            <li>Plan: cook dinner together</li>
-            <li>Plan: weekend trip</li>
+            <li>Cook a dinner together and make it a whole vibe</li>
+            <li>Go on a spontaneous weekend trip</li>
+            <li>Have a picnic and take cute photos</li>
+            <li>Watch the sunset somewhere pretty and just talk</li>
+            <li>Try a new restaurant and rate everything</li>
+            <li>Do a cozy movie night with snacks and cuddles</li>
+            <li>Take a long walk and hold hands the whole time</li>
           </ul>
-
-          <div style="height:12px"></div>
-
-          <div class="panel" style="background: rgba(255,255,255,.70)">
-            <p style="margin:0 0 8px"><b>Change next date</b></p>
-            <div class="two">
-              <input id="nextDateInput" type="text" placeholder="YYYY-MM-DD" />
-              <button class="btn" id="setNextDate" type="button">Set</button>
-            </div>
-            <p class="muted" style="margin:8px 0 0; font-size:13px">
-              This saves only in this browser.
-            </p>
-          </div>
         </div>
       </section>
 
@@ -826,7 +771,7 @@
   <div class="overlay" id="gameOverOverlay" aria-label="Game over screen" role="dialog" aria-modal="true">
     <div class="overlayCard">
       <div class="overlayMedia">
-        <img id="winImg" src="assets/adamwin.jpg" alt="Win screen image"
+        <img id="winImg" src="assets/adamwin.png" alt="Win screen image"
              onerror="this.style.display='none'">
       </div>
       <div class="overlayBody">
@@ -882,29 +827,6 @@
       });
     }
 
-    const NEXT_KEY = "pookie_next_date_v2";
-    function getNextDate(){
-      return localStorage.getItem(NEXT_KEY) || "2026-02-14";
-    }
-    function setNextDate(raw){
-      localStorage.setItem(NEXT_KEY, raw);
-    }
-    function daysBetween(a,b){
-      const ms = 24*60*60*1000;
-      const start = new Date(a.getFullYear(), a.getMonth(), a.getDate());
-      const end = new Date(b.getFullYear(), b.getMonth(), b.getDate());
-      return Math.round((end - start) / ms);
-    }
-    function updateFuture(){
-      const raw = getNextDate();
-      $("nextDateLabel").textContent = raw;
-
-      const now = new Date();
-      const target = new Date(raw + "T00:00:00");
-      const left = daysBetween(now, target);
-      $("daysLeft").textContent = String(Math.max(0, left));
-    }
-
     // Flappy game
     const canvas = $("flappy");
     const ctx = canvas.getContext("2d");
@@ -914,7 +836,7 @@
     imgAdam.src = "assets/adam.png";
     imgSophia.src = "assets/sophia.png";
 
-    const winAdam = "assets/adamwin.jpg";
+    const winAdam = "assets/adamwin.png";
     const winSophia = "assets/sophiawin.png";
 
     let running = false;
@@ -1339,19 +1261,6 @@
       $("footYear").textContent = "© " + new Date().getFullYear();
 
       wireTiles();
-
-      updateFuture();
-      $("setNextDate").addEventListener("click", () => {
-        const raw = $("nextDateInput").value.trim();
-        if(!/^\d{4}-\d{2}-\d{2}$/.test(raw)){
-          alert("Please use YYYY-MM-DD");
-          return;
-        }
-        setNextDate(raw);
-        $("nextDateInput").value = "";
-        updateFuture();
-      });
-      setInterval(updateFuture, 60 * 1000);
 
       $("pickAdam").addEventListener("click", () => startFlappy("adam"));
       $("pickSophia").addEventListener("click", () => startFlappy("sophia"));
