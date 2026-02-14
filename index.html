@@ -185,6 +185,7 @@
     }
     .muted{color:var(--muted)}
 
+    /* STORY STREAM FIXES */
     .timeline{
       position:relative;
       padding-left: 18px;
@@ -192,28 +193,29 @@
       flex-direction:column;
       gap:14px;
     }
+    /* simpler, less "weird" side line */
     .timeline::before{
       content:"";
       position:absolute;
-      left: 9px;
-      top: 8px;
-      bottom: 8px;
-      width: 3px;
+      left: 10px;
+      top: 12px;
+      bottom: 12px;
+      width: 2px;
       border-radius: 999px;
-      background: linear-gradient(var(--accent), rgba(124,58,237,.55));
-      opacity: .55;
+      background: rgba(25,10,20,.14);
     }
     .moment{
       position:relative;
       display:grid;
-      grid-template-columns: 140px 1fr;
-      gap:12px;
-      padding:12px;
+      grid-template-columns: 190px 1fr;
+      gap:14px;
+      padding:14px;
       border:1px solid var(--line);
       border-radius: 16px;
       background: rgba(255,255,255,.70);
       box-shadow: 0 10px 20px rgba(20,0,10,.08);
-      align-items:start;
+      align-items:stretch;
+      width: 100%;
     }
     @media (max-width: 620px){
       .moment{grid-template-columns:1fr}
@@ -221,22 +223,23 @@
     .moment::before{
       content:"";
       position:absolute;
-      left: -1px;
-      top: 18px;
-      width: 14px;
-      height: 14px;
+      left: 10px;
+      top: 24px;
+      width: 10px;
+      height: 10px;
       border-radius: 999px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      box-shadow: 0 0 0 4px rgba(255,77,166,.16);
+      background: rgba(255,77,166,.90);
+      box-shadow: 0 0 0 4px rgba(255,255,255,.85);
       transform: translateX(-18px);
     }
 
+    /* Bigger pictures */
     .momentMedia{
-      border-radius: 14px;
-      border:1px dashed rgba(25,10,20,.18);
-      background: rgba(255,255,255,.75);
+      border-radius: 16px;
+      border:1px solid rgba(25,10,20,.12);
+      background: rgba(255,255,255,.78);
       overflow:hidden;
-      min-height:110px;
+      min-height: 150px;
       display:flex;
       align-items:center;
       justify-content:center;
@@ -534,6 +537,7 @@
           <span class="pillSmall">I don't know about you, but I always like to go back and remember the moments we have shared. I do miss it a lot and part of me would love to relive it, but I am happy we keep on working on our story. This is just the beginning of an endless list.</span>
         </div>
 
+        <!-- FIX: keep ALL moments inside the timeline scroller so they do not "float out" -->
         <div class="panel timeline storyScroller" id="storyTimeline">
           <div class="moment" id="m1">
             <div class="momentMedia">
@@ -674,13 +678,11 @@
               <p class="momentNote">A difficult day for both of us. I do not even want to think about it too much so I will keep it short. We are some strong mfs that can overcome any challenge if it means that we can be together and love each other!</p>
             </div>
           </div>
-        </div>
 
-
-        <div class="moment" id="m11">
+          <div class="moment" id="m11">
             <div class="momentMedia">
               <img src="assets/story/11.jpg" alt="" loading="lazy"
-                   onerror="this.remove(); this.parentElement.innerHTML='<div class=momentPlaceholder>Photo slot 10<br>assets/story/10.jpg</div>';">
+                   onerror="this.remove(); this.parentElement.innerHTML='<div class=momentPlaceholder>Photo slot 11<br>assets/story/11.jpg</div>';">
             </div>
             <div class="momentBody">
               <div class="momentTop">
@@ -690,24 +692,22 @@
               <p class="momentNote">Nervous but excited to see you after what felt like forever, these few days had it all. We explored the city, had some great food, watched the sunset from a boat, but most importantly, we could hold each other's hand and make some more memories. How fortunate are we to have someone worth waiting for just to spend a few days together, making it all worth it.</p>
             </div>
           </div>
-    
 
           <div class="moment" id="m12">
-              <div class="momentMedia">
-                <img src="assets/story/12.jpg" alt="" loading="lazy"
-                   onerror="this.remove(); this.parentElement.innerHTML='<div class=momentPlaceholder>Photo slot 10<br>assets/story/10.jpg</div>';">
-              </div>
-              <div class="momentBody">
-                <div class="momentTop">
-                  <span class="dateTag">10-01-2026 - 14-01-2026</span>
-                  <p class="momentTitle">Lisbon Trip 2026</p>
-                </div>
-                <p class="momentNote">Another set of unforgettable days we got to spend together. We laughed, roadtripped, chatted, ate great food, and felt great doing so. It felt refreshing to see each other after difficult months. It was really needed to hold each other once again and spend a few days as a couple. Nothing can compare.</p>
-              </div>
+            <div class="momentMedia">
+              <img src="assets/story/12.jpg" alt="" loading="lazy"
+                   onerror="this.remove(); this.parentElement.innerHTML='<div class=momentPlaceholder>Photo slot 12<br>assets/story/12.jpg</div>';">
             </div>
+            <div class="momentBody">
+              <div class="momentTop">
+                <span class="dateTag">10-01-2026 - 14-01-2026</span>
+                <p class="momentTitle">Lisbon Trip 2026</p>
+              </div>
+              <p class="momentNote">Another set of unforgettable days we got to spend together. We laughed, roadtripped, chatted, ate great food, and felt great doing so. It felt refreshing to see each other after difficult months. It was really needed to hold each other once again and spend a few days as a couple. Nothing can compare.</p>
+            </div>
+          </div>
+        </div>
 
-
-        
         <p class="hint"></p>
       </section>
 
@@ -914,7 +914,6 @@
     imgAdam.src = "assets/adam.png";
     imgSophia.src = "assets/sophia.png";
 
-    // Win images you will upload:
     const winAdam = "assets/adamwin.png";
     const winSophia = "assets/sophiawin.png";
 
@@ -1163,7 +1162,6 @@
       const bottomH = canvas.height - bottomY;
 
       ctx.save();
-
       ctx.shadowColor = "rgba(0,0,0,0.18)";
       ctx.shadowBlur = 10;
       ctx.shadowOffsetY = 4;
@@ -1191,9 +1189,7 @@
     }
 
     function drawPipes(){
-      for(const p of game.pipes){
-        drawObstacle(p);
-      }
+      for(const p of game.pipes) drawObstacle(p);
     }
 
     function drawBird(){
@@ -1275,7 +1271,6 @@
       rafId = requestAnimationFrame(loop);
     }
 
-    // Overlay controls
     function showGameOver(){
       const imgEl = $("winImg");
       imgEl.style.display = "block";
@@ -1379,7 +1374,6 @@
         stopFlappy();
       });
 
-      // Overlay buttons
       $("overlayRestart").addEventListener("click", () => {
         tryRestartFromOverlay();
       });
@@ -1390,7 +1384,6 @@
         hideGameOver();
       });
 
-      // Clicking outside closes
       $("gameOverOverlay").addEventListener("click", (e) => {
         if(e.target === $("gameOverOverlay")) hideGameOver();
       });
