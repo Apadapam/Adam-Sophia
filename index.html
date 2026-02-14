@@ -77,13 +77,19 @@
     @media (max-width: 520px){ h1{font-size:36px} }
     .sub{margin:0; color:var(--muted); max-width: 62ch}
 
+    /* HOME GRID: 3 tiles in one row on desktop */
     .grid{
       margin-top:18px;
       display:grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(3, 1fr);
       gap:14px;
     }
-    @media (max-width: 740px){ .grid{grid-template-columns:1fr} }
+    @media (max-width: 980px){
+      .grid{grid-template-columns: 1fr 1fr;}
+    }
+    @media (max-width: 740px){
+      .grid{grid-template-columns: 1fr;}
+    }
 
     .card{
       border:1px solid var(--line);
@@ -600,19 +606,6 @@
             </div>
           </div>
 
-          <div class="card tile" role="button" tabindex="0" data-open="infoView" aria-label="Open info">
-            <div class="tileTop">
-              <div class="tileLeft">
-                <div class="icon" aria-hidden="true"><span class="iconEmoji">📝</span></div>
-                <div>
-                  <p class="title">Poems</p>
-                  <p class="desc">Homemade art from two hopeless romantics</p>
-                </div>
-              </div>
-              <div class="arrow">›</div>
-            </div>
-          </div>
-
           <div class="card tile" role="button" tabindex="0" data-open="futureView" aria-label="Open future">
             <div class="tileTop">
               <div class="tileLeft">
@@ -847,29 +840,6 @@
         </div>
       </section>
 
-      <section id="infoView" class="card view" aria-label="Info view">
-        <div class="row">
-          <h2>Info</h2>
-          <button class="btn" data-back>Back</button>
-        </div>
-
-        <div class="panel">
-          <p style="margin-top:0"><b>Message</b></p>
-          <p class="muted" style="margin-top:0">
-            Write your message here. Example: I love you, I am proud of you, and I feel lucky to have you.
-          </p>
-
-          <div style="height:10px"></div>
-
-          <p style="margin:0"><b>Cute facts</b></p>
-          <ul class="muted" style="margin:8px 0 0; padding-left:18px">
-            <li>Your laugh is my favorite sound.</li>
-            <li>I love how safe it feels to be with you.</li>
-            <li>I want a million tiny days with you.</li>
-          </ul>
-        </div>
-      </section>
-
       <!-- FUTURE: click-to-reveal mini cards (unlocks one by one) -->
       <section id="futureView" class="card view" aria-label="Future view">
         <div class="row">
@@ -886,7 +856,6 @@
           </div>
 
           <div class="futureGrid" id="futureGrid" aria-label="Future plans reveal cards">
-            <!-- 1 -->
             <button class="revealCard" type="button" data-future-card data-index="0" aria-label="Reveal plan 1" tabindex="0">
               <span class="sparkle" aria-hidden="true">✨</span>
               <div class="front">
@@ -909,7 +878,6 @@
               </div>
             </button>
 
-            <!-- 2 -->
             <button class="revealCard locked" type="button" data-future-card data-index="1" aria-label="Reveal plan 2" tabindex="-1" aria-disabled="true">
               <span class="sparkle" aria-hidden="true">✨</span>
               <div class="front">
@@ -932,7 +900,6 @@
               </div>
             </button>
 
-            <!-- 3 -->
             <button class="revealCard locked" type="button" data-future-card data-index="2" aria-label="Reveal plan 3" tabindex="-1" aria-disabled="true">
               <span class="sparkle" aria-hidden="true">✨</span>
               <div class="front">
@@ -955,7 +922,6 @@
               </div>
             </button>
 
-            <!-- 4 -->
             <button class="revealCard locked" type="button" data-future-card data-index="3" aria-label="Reveal plan 4" tabindex="-1" aria-disabled="true">
               <span class="sparkle" aria-hidden="true">✨</span>
               <div class="front">
@@ -978,7 +944,6 @@
               </div>
             </button>
 
-            <!-- 5 -->
             <button class="revealCard locked" type="button" data-future-card data-index="4" aria-label="Reveal plan 5" tabindex="-1" aria-disabled="true">
               <span class="sparkle" aria-hidden="true">✨</span>
               <div class="front">
@@ -1001,7 +966,6 @@
               </div>
             </button>
 
-            <!-- 6 -->
             <button class="revealCard locked" type="button" data-future-card data-index="5" aria-label="Reveal plan 6" tabindex="-1" aria-disabled="true">
               <span class="sparkle" aria-hidden="true">✨</span>
               <div class="front">
@@ -1024,7 +988,6 @@
               </div>
             </button>
 
-            <!-- 7 -->
             <button class="revealCard locked" type="button" data-future-card data-index="6" aria-label="Reveal plan 7" tabindex="-1" aria-disabled="true">
               <span class="sparkle" aria-hidden="true">✨</span>
               <div class="front">
@@ -1047,7 +1010,6 @@
               </div>
             </button>
 
-            <!-- 8 -->
             <button class="revealCard locked" type="button" data-future-card data-index="7" aria-label="Reveal plan 8" tabindex="-1" aria-disabled="true">
               <span class="sparkle" aria-hidden="true">✨</span>
               <div class="front">
@@ -1070,7 +1032,6 @@
               </div>
             </button>
 
-            <!-- 9 -->
             <button class="revealCard locked" type="button" data-future-card data-index="8" aria-label="Reveal plan 9" tabindex="-1" aria-disabled="true">
               <span class="sparkle" aria-hidden="true">✨</span>
               <div class="front">
@@ -1093,7 +1054,6 @@
               </div>
             </button>
 
-            <!-- 10 -->
             <button class="revealCard locked" type="button" data-future-card data-index="9" aria-label="Reveal plan 10" tabindex="-1" aria-disabled="true">
               <span class="sparkle" aria-hidden="true">✨</span>
               <div class="front">
@@ -1116,7 +1076,6 @@
               </div>
             </button>
 
-            <!-- 11 -->
             <button class="revealCard locked" type="button" data-future-card data-index="10" aria-label="Reveal plan 11" tabindex="-1" aria-disabled="true">
               <span class="sparkle" aria-hidden="true">✨</span>
               <div class="front">
@@ -1139,7 +1098,6 @@
               </div>
             </button>
 
-            <!-- 12 -->
             <button class="revealCard locked" type="button" data-future-card data-index="11" aria-label="Reveal plan 12" tabindex="-1" aria-disabled="true">
               <span class="sparkle" aria-hidden="true">✨</span>
               <div class="front">
@@ -1162,7 +1120,6 @@
               </div>
             </button>
 
-            <!-- 13 -->
             <button class="revealCard locked" type="button" data-future-card data-index="12" aria-label="Reveal plan 13" tabindex="-1" aria-disabled="true">
               <span class="sparkle" aria-hidden="true">✨</span>
               <div class="front">
@@ -1185,7 +1142,6 @@
               </div>
             </button>
 
-            <!-- 14 -->
             <button class="revealCard locked" type="button" data-future-card data-index="13" aria-label="Reveal plan 14" tabindex="-1" aria-disabled="true">
               <span class="sparkle" aria-hidden="true">✨</span>
               <div class="front">
@@ -1207,7 +1163,6 @@
                 </div>
               </div>
             </button>
-
           </div>
 
           <div style="height:12px"></div>
@@ -1228,7 +1183,6 @@
     </main>
   </div>
 
-  <!-- Game over overlay -->
   <div class="overlay" id="gameOverOverlay" aria-label="Game over screen" role="dialog" aria-modal="true">
     <div class="overlayCard">
       <div class="overlayMedia">
@@ -1322,9 +1276,7 @@
         setCardLocked(card, i > progress);
       });
 
-      if(cards[0]){
-        setCardLocked(cards[0], false);
-      }
+      if(cards[0]) setCardLocked(cards[0], false);
 
       const hint = $("futureHint");
       if(hint){
